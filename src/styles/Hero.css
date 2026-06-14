@@ -144,8 +144,9 @@
 .hero__powered-group {
   position: absolute;
   bottom: var(--space-6);
-  left: 50%;
-  transform: translateX(-50%);
+  right: var(--gutter);
+  
+  
   z-index: 1;
   display: flex;
   flex-direction: column;
