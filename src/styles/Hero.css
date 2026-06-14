@@ -127,6 +127,31 @@
       0 0 60px rgba(74, 222, 128, 0.2);
   }
 }
+/* Powered by badge */
+.hero__powered {
+  position: absolute;
+  bottom: var(--space-6);
+  right: var(--gutter);
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 1rem;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.03em;
+}
+.hero__powered a {
+  color: var(--color-white);
+  font-weight: var(--font-bold);
+}
+.hero__powered a:hover {
+  color: #4ade80;
+}
+
 @media (max-width: 768px) {
   .hero__title { font-size: clamp(3.5rem, 18vw, 7rem); }
   .hero__content { padding-inline: var(--space-6); }
