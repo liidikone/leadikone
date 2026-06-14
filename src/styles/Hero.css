@@ -21,6 +21,47 @@
   object-fit: cover;
   object-position: center;
 }
+/* Ambient glow layer */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 60%, rgba(74, 222, 128, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 5% 80%, rgba(74, 222, 128, 0.08) 0%, transparent 60%);
+  animation: hero-ambient-pulse 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* Glitter particles */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(74, 222, 128, 0.7) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    radial-gradient(circle, rgba(74, 222, 128, 0.4) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 180px 180px, 240px 240px, 320px 320px, 140px 140px;
+  background-position: 20px 40px, 80px 120px, 150px 60px, 40px 200px;
+  opacity: 0.4;
+  animation: hero-glitter-drift 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes hero-ambient-pulse {
+  0%   { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+@keyframes hero-glitter-drift {
+  0%   { background-position: 20px 40px, 80px 120px, 150px 60px, 40px 200px; opacity: 0.3; }
+  100% { background-position: 30px 60px, 90px 100px, 140px 80px, 50px 180px; opacity: 0.55; }
+}
+
 .hero__bg::after {
   content: '';
   position: absolute;
