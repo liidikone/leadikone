@@ -2,8 +2,12 @@
    HERO.CSS
    ============================================================ */
 .hero {
+  /* globals.css asettaa html { zoom: 1.1 }, joten 100svh renderöityy
+     110% kokoiseksi ruudusta. Jaetaan zoom-kertoimella, jotta hero
+     on aina tasan yhden ruudun korkuinen. */
+  --hero-zoom: 1.1;
   position: relative;
-  min-height: var(--hero-min-height);
+  min-height: calc(var(--hero-min-height) / var(--hero-zoom));
   background: var(--hero-bg);
   display: flex;
   align-items: center;
@@ -124,21 +128,7 @@
   font-size: 0.65em;
   margin-top: 0.05em;
   color: #4ade80;
-  animation:
-    liidikone-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both,
-    hero-glow-pulse 4s ease-in-out 1.2s infinite alternate;
-}
-@keyframes liidikone-slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(-120px);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
-  }
+  animation: hero-glow-pulse 4s ease-in-out infinite alternate;
 }
 @keyframes hero-glow-pulse {
   0% {
@@ -154,84 +144,12 @@
       0 0 60px rgba(74, 222, 128, 0.2);
   }
 }
-/* Powered by group */
-.hero__powered-group {
+/* Powered by badge */
+.hero__powered {
   position: absolute;
   bottom: var(--space-6);
   right: var(--gutter);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  animation: powered-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
-}
-.hero__powered-logo {
-  display: block;
-  width: 320px;
-  height: auto;
-  object-fit: contain;
-  animation: logo-float 9s ease-in-out 1.4s infinite alternate;
-}
-@keyframes powered-slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(140px);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
-  }
-}
-
-/* Floating label — drifting over dark area, top right of hero */
-.hero__powered-label {
-  position: absolute;
-  top: 30%;
-  right: 420px;
-  z-index: 3;
-  margin: 0;
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  font-weight: var(--font-bold);
-  color: #ffffff;
-  letter-spacing: 0.02em;
-  text-align: center;
-  line-height: 1.25;
-  pointer-events: none;
-  transform: rotate(-5deg);
-  text-shadow:
-    0 0 14px rgba(255, 255, 255, 0.95),
-    0 0 35px rgba(255, 255, 255, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.5);
-  transform-origin: center center;
-  animation:
-    label-pop 0.5s cubic-bezier(0.34, 1.6, 0.64, 1) 2s both,
-    label-cloud 11s ease-in-out 2.6s infinite alternate;
-}
-@keyframes label-pop {
-  0%   { opacity: 0; transform: rotate(-5deg) scale(0.4); }
-  70%  { opacity: 1; transform: rotate(-5deg) scale(1.08); }
-  100% { opacity: 1; transform: rotate(-5deg) scale(1); }
-}
-@keyframes label-cloud {
-  0%   { transform: rotate(-5deg) scale(1) translate(0px, 0px); }
-  30%  { transform: rotate(-3deg) scale(1) translate(5px, -4px); }
-  60%  { transform: rotate(-7deg) scale(1) translate(-3px, 3px); }
-  100% { transform: rotate(-5deg) scale(1) translate(2px, -6px); }
-}
-
-@keyframes logo-float {
-  0%   { transform: translateY(0px); }
-  100% { transform: translateY(-8px); }
-}
-@keyframes logo-glow-breathe {
-  0%   { opacity: 0.7; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.06); }
-}
-
-.hero__powered {
+  z-index: 1;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
