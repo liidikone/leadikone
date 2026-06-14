@@ -155,7 +155,6 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  zoom: 1.1;
 }
 
 body {
