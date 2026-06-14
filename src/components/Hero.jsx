@@ -21,10 +21,7 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* Green glow — bottom right, bleeds out from behind everything */}
-      <div className="hero__powered-glow" aria-hidden="true" />
-
-      {/* Floating label — drifts above the logo */}
+      {/* Floating label — center/left over the hero image */}
       <p className="hero__powered-label">Kysymyksiä?<br />AI agentti vastaa</p>
 
       <div className="hero__powered-group">
