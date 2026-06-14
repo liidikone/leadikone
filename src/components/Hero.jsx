@@ -24,6 +24,9 @@ export default function Hero() {
           <a href="#" className="btn btn--outline">Button 2</a>
         </div>
       </div>
+      <div className="hero__powered">
+        <span>Powered by <a href="https://synabs.fi" target="_blank" rel="noopener noreferrer">Synabs.fi</a></span>
+      </div>
     </section>
   )
 }
