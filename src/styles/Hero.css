@@ -38,6 +38,8 @@
   margin-left: 0;
 }
 .hero__title {
+  font-family: 'Falzon', var(--font-sans);
+  font-style: italic;
   font-size: clamp(4.2rem, 12vw, 10.5rem);
   line-height: 0.88;
   letter-spacing: -0.04em;
@@ -48,6 +50,8 @@
   text-align: left;
 }
 .hero__lead {
+  font-family: 'Falzon', var(--font-sans);
+  font-style: italic;
   font-size: clamp(var(--text-lg), 1.8vw, var(--text-3xl));
   font-weight: var(--font-light);
   color: var(--color-white);
