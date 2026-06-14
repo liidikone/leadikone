@@ -146,16 +146,27 @@
   bottom: var(--space-6);
   right: var(--gutter);
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
-  padding: 0.35rem 1rem;
+  padding: 0.55rem 1rem 0.35rem;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: rgba(255, 255, 255, 0.7);
   letter-spacing: 0.03em;
+}
+.hero__powered-logo {
+  display: block;
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.85;
 }
 .hero__powered a {
   color: var(--color-white);
