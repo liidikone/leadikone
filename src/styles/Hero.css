@@ -101,11 +101,17 @@
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-10);
 }
-.hero__buttons {
+.hero__lead-row {
   display: flex;
-  gap: var(--space-4);
+  align-items: center;
+  gap: var(--space-6);
   flex-wrap: wrap;
+  margin-bottom: var(--space-10);
 }
+.hero__lead-row .hero__lead {
+  margin-bottom: 0;
+}
+
 .hero__title-glow {
   display: block;
   font-size: 0.65em;
