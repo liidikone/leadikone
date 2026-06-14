@@ -9,7 +9,7 @@
   right: 0;
   z-index: var(--z-nav);
   height: var(--nav-height);
-  background: var(--color-white, #ffffff);
+  background: transparent;
 }
 
 .navbar--menu-open {
