@@ -5,7 +5,9 @@ import '../styles/Hero.css'
 export default function Hero() {
   useEffect(() => {
     function loadSynabsWidget() {
-      if (document.querySelector('[data-synabs-widget-slug="liidikone"]')) return
+      // Tarkista script-tagin src:n perusteella — widget elää Shadow DOM:issa,
+      // joten data-synabs-widget-slug ei löydy document.querySelector:lla.
+      if (document.querySelector('script[src="https://synabs-admin.vercel.app/widget.js"]')) return
 
       const script = document.createElement('script')
       script.src = 'https://synabs-admin.vercel.app/widget.js'
