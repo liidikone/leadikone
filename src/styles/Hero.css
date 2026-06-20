@@ -240,7 +240,7 @@
    ============================================================ */
 .hero__chat-label {
   position: fixed;
-  bottom: 110px;
+  bottom: 120px;
   right: 24px;
   z-index: 2147483000;
   margin: 0;
