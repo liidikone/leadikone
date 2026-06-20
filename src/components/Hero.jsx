@@ -81,10 +81,13 @@ export default function Hero() {
 
       <div className="hero__powered-group">
         <img src="/synabs.png" alt="Synabs" className="hero__powered-logo" />
-        <p className={`hero__powered-label${chatOpen ? ' is-hidden' : ''}`}>
-          Kysymyksiä?<br />Kysy AI agentilta alta ↓
-        </p>
       </div>
+
+      {/* Kelluu kiinteästi widgetin avausnapin yläpuolella.
+          Katoaa kun chat avataan (synabs:open / synabs:close) */}
+      <p className={`hero__chat-label${chatOpen ? ' is-hidden' : ''}`}>
+        Kysymyksiä?<br />Kysy AI agentilta ↓
+      </p>
     </section>
   )
 }
