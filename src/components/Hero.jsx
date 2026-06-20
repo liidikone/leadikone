@@ -26,37 +26,46 @@ export default function Hero() {
   }, [])
 
   // Kuuntele chat-widgetin avaus/sulkeminen
+  // Widget käyttää Shadow DOMia (mode: 'open'), host-elementillä on
+  // attribuutti [data-synabs-widget-slug]. Tarkkaillaan suoraan
+  // shadowRoot:in sisällä olevan #win-wrap-elementin "open"-luokkaa.
   useEffect(() => {
-    const handleOpen  = () => setChatOpen(true)
-    const handleClose = () => setChatOpen(false)
-    window.addEventListener('synabs:open',  handleOpen)
-    window.addEventListener('synabs:close', handleClose)
+    let panelObserver = null
+    let hostObserver = null
 
-    // FALLBACK 1: jos widget.js ei lähetä custom eventtejä,
-    // tunnistetaan avaus klikkaamalla launcher-nappia (id/class
-    // jossa "synabs" tai "widget" — laajenna tarvittaessa)
-    const handleDocClick = (e) => {
-      const launcher = e.target.closest('[id*="synabs" i], [class*="synabs" i], [id*="widget" i], [class*="chat-launcher" i], [class*="chat-bubble" i]')
-      if (launcher) {
-        setChatOpen((prev) => !prev)
-      }
+    function watchPanel(winWrap) {
+      const update = () => setChatOpen(winWrap.classList.contains('open'))
+      update()
+      panelObserver = new MutationObserver(update)
+      panelObserver.observe(winWrap, { attributes: true, attributeFilter: ['class'] })
     }
-    document.addEventListener('click', handleDocClick, true)
 
-    // FALLBACK 2: tarkkaile kun widget lisää/poistaa paneelin DOM:iin
-    const observer = new MutationObserver(() => {
-      const panel = document.querySelector(
-        '[id*="synabs" i] [class*="panel" i], [class*="synabs" i][class*="panel" i], [class*="synabs" i][class*="open" i]'
-      )
-      if (panel) setChatOpen(true)
-    })
-    observer.observe(document.body, { childList: true, subtree: true })
+    function tryAttach() {
+      const host = document.querySelector('[data-synabs-widget-slug]')
+      if (host && host.shadowRoot) {
+        const winWrap = host.shadowRoot.getElementById('win-wrap')
+        if (winWrap) {
+          watchPanel(winWrap)
+          return true
+        }
+      }
+      return false
+    }
+
+    if (!tryAttach()) {
+      // Widget-skripti lataa hostin asynkronisesti -> odotetaan sen ilmestymistä
+      hostObserver = new MutationObserver(() => {
+        if (tryAttach() && hostObserver) {
+          hostObserver.disconnect()
+          hostObserver = null
+        }
+      })
+      hostObserver.observe(document.body, { childList: true, subtree: true })
+    }
 
     return () => {
-      window.removeEventListener('synabs:open',  handleOpen)
-      window.removeEventListener('synabs:close', handleClose)
-      document.removeEventListener('click', handleDocClick, true)
-      observer.disconnect()
+      if (panelObserver) panelObserver.disconnect()
+      if (hostObserver) hostObserver.disconnect()
     }
   }, [])
 
