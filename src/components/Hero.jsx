@@ -45,9 +45,9 @@ export default function Hero() {
     '/xpower_membership_egym_500px.avif',
   ]
 
-  // Vain 2x toisto: riittää saumattomaan -50% looppiin,
-  // mutta DOM:ssa 10 imgiä 40:n sijaan -> huomattavasti kevyempi.
-  const trackLogos = [...logos, ...logos]
+  // 4x toisto: riittää täyttämään koko hero-leveyden ilman tyhjää
+  // kohtaa loopin lopussa, mutta DOM:ssa vain 20 imgiä 40:n sijaan.
+  const trackLogos = [...logos, ...logos, ...logos, ...logos]
 
   return (
     <section className="hero">
