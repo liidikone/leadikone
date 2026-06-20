@@ -86,7 +86,7 @@ export default function Hero() {
       {/* Kelluu kiinteästi widgetin avausnapin yläpuolella.
           Katoaa kun chat avataan (synabs:open / synabs:close) */}
       <p className={`hero__chat-label${chatOpen ? ' is-hidden' : ''}`}>
-        Kysymyksiä?<br />Kysy AI agentilta ↓
+        Kysymyksiä?<br />Kysy AI agentilta
       </p>
     </section>
   )
