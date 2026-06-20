@@ -1,105 +1,543 @@
-"use client"
-import { useEffect, useState } from 'react'
-import '../styles/Hero.css'
+/* ============================================================
+   HERO.CSS
+   ============================================================ */
+.hero {
+  position: relative;
+  min-height: var(--hero-min-height);
+  background: var(--hero-bg);
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--space-20);
+  overflow: hidden;
+}
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+/* Ambient glow layer */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 70% at 10% 70%, rgba(74, 222, 128, 0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 80% at 0% 90%, rgba(74, 222, 128, 0.3) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 30% 50%, rgba(74, 222, 128, 0.2) 0%, transparent 60%);
+  animation: hero-ambient-pulse 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
 
-export default function Hero() {
-  const [chatOpen, setChatOpen] = useState(false)
+/* Glitter particles */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(74, 222, 128, 0.7) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    radial-gradient(circle, rgba(74, 222, 128, 0.4) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 180px 180px, 240px 240px, 320px 320px, 140px 140px;
+  background-position: 20px 40px, 80px 120px, 150px 60px, 40px 200px;
+  opacity: 0.4;
+  animation: hero-glitter-drift 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
 
-  useEffect(() => {
-    function loadSynabsWidget() {
-      if (document.querySelector('script[src="https://synabs-admin.vercel.app/widget.js"]')) return
+@keyframes hero-ambient-pulse {
+  0%   { opacity: 0.8; }
+  100% { opacity: 1; }
+}
 
-      const script = document.createElement('script')
-      script.src = 'https://synabs-admin.vercel.app/widget.js'
-      script.setAttribute('data-api-base', 'https://synabs-admin.vercel.app')
-      script.setAttribute('data-bot-slug', 'liidikone')
-      script.async = true
-      document.body.appendChild(script)
-    }
+@keyframes hero-glitter-drift {
+  0%   { background-position: 20px 40px, 80px 120px, 150px 60px, 40px 200px; opacity: 0.3; }
+  100% { background-position: 30px 60px, 90px 100px, 140px 80px, 50px 180px; opacity: 0.55; }
+}
 
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      loadSynabsWidget()
-    } else {
-      document.addEventListener('DOMContentLoaded', loadSynabsWidget)
-      return () => document.removeEventListener('DOMContentLoaded', loadSynabsWidget)
-    }
-  }, [])
+.hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.65) 0%,
+      rgba(0, 0, 0, 0.25) 35%,
+      rgba(0, 0, 0, 0.00) 50%
+    ),
+    linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.65) 0%,
+      rgba(0, 0, 0, 0.25) 35%,
+      rgba(0, 0, 0, 0.00) 50%
+    );
+}
+.hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-top: calc(var(--nav-height) + var(--space-16));
+  margin-left: 0;
+}
 
-  // Kuuntele chat-widgetin avaus/sulkeminen
-  useEffect(() => {
-    const handleOpen  = () => setChatOpen(true)
-    const handleClose = () => setChatOpen(false)
-    window.addEventListener('synabs:open',  handleOpen)
-    window.addEventListener('synabs:close', handleClose)
-    return () => {
-      window.removeEventListener('synabs:open',  handleOpen)
-      window.removeEventListener('synabs:close', handleClose)
-    }
-  }, [])
+/* +10% title: 4.2→4.62, 12vw→13.2vw, 10.5→11.55 */
+.hero__title {
+  font-family: 'Falzon', var(--font-sans);
+  font-style: italic;
+  font-size: clamp(4.62rem, 13.2vw, 11.55rem);
+  line-height: 0.88;
+  letter-spacing: 0.06em;
+  font-weight: var(--font-bold);
+  color: var(--color-white);
+  margin-bottom: var(--space-10);
+  max-width: none;
+  text-align: left;
+}
 
-  // Varmuuden vuoksi: jos widget ei lähetä synabs:open-eventtiä
-  // (tai lähettää sen viiveellä), piilotetaan teksti heti kun
-  // käyttäjä klikkaa itse widget-nappia.
-  useEffect(() => {
-    function handleDocClick(e) {
-      const target = e.target.closest('[id*="synabs" i], [class*="synabs" i]')
-      if (target) setChatOpen(true)
-    }
-    document.addEventListener('click', handleDocClick, true)
-    return () => document.removeEventListener('click', handleDocClick, true)
-  }, [])
+/* +10% lead: text-2xl→scale via font-size override, max-width 700→770 */
+.hero__lead {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: clamp(var(--text-2xl), 3.85vw, var(--text-5xl));
+  font-weight: var(--font-light);
+  color: var(--color-white);
+  max-width: 770px;
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-10);
+}
+.hero__lead-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+}
+.hero__lead-row .hero__lead {
+  margin-bottom: 0;
+}
 
-  const logos = [
-    '/ilona_tampere_500px.avif',
-    '/suomen_terassilasitus_500px.avif',
-    '/synabs_500px.avif',
-    '/verkkopantteri_500px.avif',
-    '/xpower_membership_egym_500px.avif',
-  ]
+/* +10% cta: 64→70px, font-size text-lg → ~1.21× */
+.hero__cta-btn {
+  height: 70px !important;
+  padding-inline: 3.3rem !important;
+  font-size: calc(var(--text-lg) * 1.1) !important;
+  font-weight: var(--font-bold) !important;
+  letter-spacing: 0.06em !important;
+}
 
-  // 4x toisto: riittää täyttämään koko hero-leveyden ilman tyhjää
-  // kohtaa loopin lopussa, mutta DOM:ssa vain 20 imgiä 40:n sijaan.
-  const trackLogos = [...logos, ...logos, ...logos, ...logos]
+/* title-glow: 0.65em stays (relative to title which is already +10%) */
+.hero__title-glow {
+  display: block;
+  font-size: 0.65em;
+  margin-top: 0.05em;
+  color: #4ade80;
+  animation:
+    liidikone-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both,
+    hero-glow-pulse 4s ease-in-out 1.2s infinite alternate;
+}
+@keyframes liidikone-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-120px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+@keyframes hero-glow-pulse {
+  0% {
+    text-shadow:
+      0 0 6px rgba(74, 222, 128, 0.35),
+      0 0 14px rgba(74, 222, 128, 0.18),
+      0 0 28px rgba(74, 222, 128, 0.08);
+  }
+  100% {
+    text-shadow:
+      0 0 14px rgba(74, 222, 128, 0.75),
+      0 0 34px rgba(74, 222, 128, 0.4),
+      0 0 60px rgba(74, 222, 128, 0.2);
+  }
+}
 
-  return (
-    <section className="hero">
-      <div className="hero__bg" aria-hidden="true">
-        <img src="/leadikone-bg.avif" alt="" loading="eager" fetchPriority="high" />
-      </div>
+/* ============================================================
+   POWERED GROUP — Synabs logo + avaa-nappi
+   ============================================================ */
+.hero__powered-group {
+  position: absolute;
+  bottom: var(--space-6);
+  right: var(--gutter);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  animation: powered-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
 
-      <div className="hero__content">
-        <h1 className="hero__title">
-          SOMESANKARIT<br />
-          <span className="hero__title-glow">→LIIDIKONE</span>
-        </h1>
-        <p className="hero__lead">Muuta näyttökerrat rahaksi</p>
-      </div>
+/* +10%: 320→352px */
+.hero__powered-logo {
+  display: block;
+  width: 352px;
+  height: auto;
+  object-fit: contain;
+  /* Logo alkutilassa piilossa — JS lisää .is-open luokan */
+  transform: translateY(40px);
+  opacity: 0;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s ease;
+}
 
-      {/* Referenssilogo-wheel — vasemmalta, 70% leveyttä, infinite loop */}
-      <div className="hero__ref-wheel" aria-hidden="true">
-        <div className="hero__ref-track">
-          {trackLogos.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt=""
-              className="hero__ref-logo"
-              loading="eager"
-              decoding="async"
-            />
-          ))}
-        </div>
-      </div>
+/* Kun logo on auki */
+.hero__powered-logo.is-open {
+  transform: translateY(0px);
+  opacity: 1;
+  animation: logo-float 9s ease-in-out 0.6s infinite alternate;
+}
 
-      <div className="hero__powered-group">
-        <img src="/synabs.png" alt="Synabs" className="hero__powered-logo" />
-      </div>
+@keyframes powered-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(140px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
 
-      {/* Kelluu kiinteästi widgetin avausnapin yläpuolella.
-          Katoaa kun chat avataan (synabs:open / synabs:close) */}
-      <p className={`hero__chat-label${chatOpen ? ' is-hidden' : ''}`}>
-        Kysymyksiä?<br />Kysy AI agentilta
-      </p>
-    </section>
-  )
+/* ============================================================
+   BTN-WRAP — pitää napin + labelin yhdessä
+   ============================================================ */
+.hero__powered-btn-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ============================================================
+   CHAT LABEL — kelluu kiinteästi widgetin avausnapin yläpuolella
+   (widget on kolmannen osapuolen skripti, position: fixed
+   oikeassa alakulmassa) — +10%: 1.6→1.76, 3vw→3.3vw, 2.2→2.42
+   ============================================================ */
+.hero__chat-label {
+  position: fixed;
+  bottom: 120px;
+  right: 24px;
+  z-index: 2147483000;
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: var(--font-bold);
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  text-align: right;
+  line-height: 1.25;
+  pointer-events: none;
+  text-shadow:
+    0 0 14px rgba(255, 255, 255, 0.95),
+    0 0 35px rgba(255, 255, 255, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+  transform-origin: center center;
+  animation:
+    label-pop 0.5s cubic-bezier(0.34, 1.6, 0.64, 1) 2s both,
+    label-cloud 11s ease-in-out 2.6s infinite alternate;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Kun chat on auki, label katoaa */
+.hero__chat-label.is-hidden {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  animation: none;
+}
+
+@media (max-width: 768px) {
+  .hero__chat-label {
+    bottom: 58px;
+    right: 95px;
+    left: auto;
+    font-size: 0.85rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+@keyframes label-pop {
+  0%   { opacity: 0; transform: scale(0.4); }
+  70%  { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes label-cloud {
+  0%   { transform: scale(1) translate(0px, 0px); }
+  30%  { transform: scale(1) translate(4px, -3px); }
+  60%  { transform: scale(1) translate(-2px, 2px); }
+  100% { transform: scale(1) translate(2px, -4px); }
+}
+
+@keyframes logo-float {
+  0%   { transform: translateY(0px); }
+  100% { transform: translateY(-8px); }
+}
+@keyframes logo-glow-breathe {
+  0%   { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.06); }
+}
+
+/* ============================================================
+   AVAA-NAPPI — pill-tyyli kuten alkuperäinen, toimii nappina
+   +10% skaalattu (padding, font-size)
+   ============================================================ */
+.hero__powered {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 0.55rem 1.32rem;
+  font-size: calc(var(--text-sm) * 1.1);
+  font-weight: var(--font-medium);
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.03em;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  user-select: none;
+}
+.hero__powered:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+/* Auki-tila */
+.hero__powered.is-open {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* Napissa oleva nuoli-ikoni, kääntyy auki-tilassa */
+.hero__powered-arrow {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  font-style: normal;
+}
+.hero__powered.is-open .hero__powered-arrow {
+  transform: rotate(180deg);
+}
+
+
+/* Notification badge */
+.hero__powered-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: var(--font-bold);
+  line-height: 1;
+  margin-left: 0.3rem;
+  animation: badge-pop 0.4s cubic-bezier(0.34, 1.6, 0.64, 1) both;
+}
+@keyframes badge-pop {
+  0%   { opacity: 0; transform: scale(0.3); }
+  70%  { transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================================
+   MOBILE
+   +10%: 3.5→3.85, 7→7.7
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero__title { font-size: clamp(3.85rem, 18vw, 7.7rem); }
+  .hero__content { padding-inline: var(--space-6); }
+  .hero__lead { font-size: clamp(var(--text-xl), 5.5vw, var(--text-3xl)); }
+}
+
+/* ============================================================
+   CALL MODAL (ei muutoksia)
+   ============================================================ */
+.hero__call-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: call-fade-in 0.25s ease;
+}
+.hero__call-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-lg);
+  padding: var(--space-12) var(--space-16);
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.4), 0 0 60px rgba(74, 222, 128, 0.08);
+  animation: call-slide-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero__call-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.hero__call-number {
+  font-family: 'Falzon', var(--font-sans);
+  font-style: italic;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: var(--font-bold);
+  color: var(--color-white);
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 30px rgba(74, 222, 128, 0.3);
+  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+}
+.hero__call-number:hover {
+  color: #4ade80;
+  text-shadow: 0 0 40px rgba(74, 222, 128, 0.6);
+}
+.hero__call-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.4);
+  font-size: var(--text-lg);
+  transition: color var(--transition-fast);
+}
+.hero__call-close:hover { color: var(--color-white); }
+
+@keyframes call-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes call-slide-up {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   REFERENSSI-WHEEL — UUSI
+   Vasemmalta alkava, 70% leveyttä, fade in/out reunoissa
+   ============================================================ */
+.hero__ref-wheel {
+  position: absolute;
+  bottom: var(--space-8);
+  left: 0;
+  width: 77.5%;
+  z-index: 2;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  animation: ref-wheel-appear 1s ease 1s both;
+}
+
+@keyframes ref-wheel-appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero__ref-track {
+  display: flex;
+  align-items: center;
+  gap: 6rem;
+  width: max-content;
+  animation: ref-scroll 20s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.hero__ref-wheel:hover .hero__ref-track {
+  animation-play-state: paused;
+}
+
+/* Track sisältää nyt 4x logosetin (ei 8x eikä 2x), joten
+   saumaton loppu on -25% — riittää myös täyttämään koko
+   leveyden ilman tyhjää kohtaa loopin lopussa */
+@keyframes ref-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-25%, 0, 0); }
+}
+
+.hero__ref-logo {
+  height: 120px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: opacity 0.25s ease;
+  contain: layout style paint;
+}
+
+.hero__ref-logo:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .hero__ref-wheel {
+    width: 100%;
+    bottom: calc(var(--space-6) + 70px);
+  }
+  .hero__ref-track {
+    gap: 2rem;
+  }
+  .hero__ref-logo {
+    height: 80px;
+  }
 }
