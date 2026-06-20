@@ -7,10 +7,10 @@ export default function Hero() {
 
   useEffect(() => {
     function loadSynabsWidget() {
-      if (document.querySelector('script[src="https://synabs-admin.vercel.app/widget.js"]')) return
+      if (document.querySelector('script[src="https://synabs-admin.vercel.app/liidikone-widget.js"]')) return
 
       const script = document.createElement('script')
-      script.src = 'https://synabs-admin.vercel.app/widget.js'
+      script.src = 'https://synabs-admin.vercel.app/liidikone-widget.js'
       script.setAttribute('data-api-base', 'https://synabs-admin.vercel.app')
       script.setAttribute('data-bot-slug', 'liidikone')
       script.async = true
