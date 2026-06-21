@@ -4,7 +4,7 @@ import '../styles/Navbar.css'
 
 const navLinks = [
   { href: '/tiimi', label: 'Tiimi', external: false },
-  { href: 'https://synabs.fi', label: 'Palvelut', external: true },
+  { href: '/palvelut', label: 'Palvelut', external: false },
 ]
 
 export default function Navbar() {
