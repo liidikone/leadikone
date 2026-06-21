@@ -71,7 +71,8 @@
 
 .ps-card {
   position: relative;
-  height: 340px;
+  width: 456px;
+  height: 449px;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.15);
@@ -86,7 +87,9 @@
 .ps-card__bg {
   position: absolute;
   inset: 0;
-  background: url('/placeholder.avif') center / cover no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   opacity: 0.3;
 }
 
