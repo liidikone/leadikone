@@ -14,18 +14,12 @@
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  padding: 4rem clamp(1.5rem, 4vw, 5rem) 5rem;
+  padding-left: clamp(1.5rem, 4vw, 5rem);
+  padding-right: clamp(1.5rem, 4vw, 5rem);
   display: flex;
   flex-direction: column;
   gap: 4rem;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 32px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  padding-top: 4rem;
 }
 
 /* ============================================================
@@ -280,13 +274,6 @@
    MOBILE
    ============================================================ */
 @media (max-width: 768px) {
-  .tiimi-page__inner {
-    border-radius: 20px;
-    padding: 2.5rem 1.25rem 3rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-
   .tiimi-page__title {
     font-size: clamp(1.4rem, 7vw, 2.2rem);
   }
