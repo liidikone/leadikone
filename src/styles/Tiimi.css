@@ -44,7 +44,7 @@
   .tiimi-page__header   { grid-area: header; }
   .tiimi-page__title    { white-space: nowrap; }
   .tiimi-page__mission  { grid-area: mission; align-self: start; max-width: none; }
-  .tiimi-page__cards-section { grid-area: cards; align-self: center; justify-self: center; }
+  .tiimi-page__cards-section { grid-area: cards; align-self: center; justify-self: center; margin-top: -1.25rem; }
   .tiimi-page__hr       { display: none; }
 
   .tiimi-page__grid--sellers  { grid-area: sellers; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
