@@ -10,9 +10,9 @@ const teamMembers = [
 
 const cards = [
   { id: 1, label: 'Anniina',  img: '/sisallontuottaja_01.avif' },
-  { id: 2, label: 'Pauliina', img: '/sisallontuottaja_02.avif' },
-  { id: 3, label: 'Santeri',  img: '/sisallontuottaja_03.avif' },
-  { id: 4, label: 'Veera',    img: '/sisallontuottaja_04.avif' },
+  { id: 2, label: 'Pauliina', img: '/sisallontuottaja_01.avif' },
+  { id: 3, label: 'Santeri',  img: '/sisallontuottaja_01.avif' },
+  { id: 4, label: 'Veera',    img: '/sisallontuottaja_01.avif' },
 ]
 
 const CARD_W = 260
@@ -39,8 +39,9 @@ function useCardSound() {
       const ctx = getCtx()
       const now = ctx.currentTime
 
-      // Lyhyt kohinapyrähdys = kortin "swish/whoosh" -tekstuuri
-      const dur = 0.12
+      // Kevyt "naps→shuush": lyhyt kohinapyrähdys jonka taajuus liukuu
+      // alaspäin — napsahtava alku, pehmeä häivytys, ei syvää bassoa.
+      const dur = 0.09
       const bufferSize = Math.floor(ctx.sampleRate * dur)
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
       const data = buffer.getChannelData(0)
@@ -52,12 +53,12 @@ function useCardSound() {
 
       const bandpass = ctx.createBiquadFilter()
       bandpass.type = 'bandpass'
-      bandpass.Q.value = 0.7
-      bandpass.frequency.setValueAtTime(3400, now)
-      bandpass.frequency.exponentialRampToValueAtTime(1000, now + dur)
+      bandpass.Q.value = 0.6
+      bandpass.frequency.setValueAtTime(4200, now)
+      bandpass.frequency.exponentialRampToValueAtTime(1500, now + dur)
 
       const noiseGain = ctx.createGain()
-      noiseGain.gain.setValueAtTime(0.22, now)
+      noiseGain.gain.setValueAtTime(0.1, now)
       noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur)
 
       noise.connect(bandpass)
@@ -65,19 +66,6 @@ function useCardSound() {
       noiseGain.connect(ctx.destination)
       noise.start(now)
       noise.stop(now + dur)
-
-      // Pieni matala "thump" antamaan kortille painoa
-      const thump = ctx.createOscillator()
-      thump.type = 'sine'
-      thump.frequency.setValueAtTime(170, now)
-      thump.frequency.exponentialRampToValueAtTime(65, now + 0.08)
-      const thumpGain = ctx.createGain()
-      thumpGain.gain.setValueAtTime(0.1, now)
-      thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09)
-      thump.connect(thumpGain)
-      thumpGain.connect(ctx.destination)
-      thump.start(now)
-      thump.stop(now + 0.1)
     } catch (_) {}
   }
 }
@@ -153,19 +141,19 @@ export default function Tiimi() {
           </p>
         </div>
 
-        <div className="tiimi-page__grid tiimi-page__grid--founders">
-          {teamMembers.slice(0, 2).map(m => <Member key={m.id} {...m} />)}
+        <div className="tiimi-page__cards-section">
+          <h2 className="tiimi-page__cards-title">SISÄLLÖNTUOTTAJAT</h2>
+          <StackedCards />
         </div>
+
+        <hr className="tiimi-page__hr" />
 
         <div className="tiimi-page__grid tiimi-page__grid--sellers">
           {teamMembers.slice(2, 4).map(m => <Member key={m.id} {...m} />)}
         </div>
 
-        <hr className="tiimi-page__hr" />
-
-        <div className="tiimi-page__cards-section">
-          <h2 className="tiimi-page__cards-title">SISÄLLÖNTUOTTAJAT</h2>
-          <StackedCards />
+        <div className="tiimi-page__grid tiimi-page__grid--founders">
+          {teamMembers.slice(0, 2).map(m => <Member key={m.id} {...m} />)}
         </div>
 
       </div>
