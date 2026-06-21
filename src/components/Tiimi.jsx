@@ -1,125 +1,93 @@
-"use client"
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import '../styles/Tiimi.css'
 
 const teamMembers = [
-  {
-    id: 1,
-    role: 'Founder',
-    name: 'Placeholder',
-    tag: 'FOUNDER',
-    shape: 'square',
-  },
-  {
-    id: 2,
-    role: 'Co-Founder',
-    name: 'Placeholder',
-    tag: 'CO-FOUNDER',
-    shape: 'square',
-  },
-  {
-    id: 3,
-    role: 'Myyjä',
-    name: 'Placeholder',
-    tag: 'MYYJÄ',
-    shape: 'square',
-  },
-  {
-    id: 4,
-    role: 'Myyjä',
-    name: 'Placeholder',
-    tag: 'MYYJÄ',
-    shape: 'square',
-  },
+  { id: 1, tag: 'FOUNDER',    name: 'Placeholder' },
+  { id: 2, tag: 'CO-FOUNDER', name: 'Placeholder' },
+  { id: 3, tag: 'MYYJÄ',      name: 'Placeholder' },
+  { id: 4, tag: 'MYYJÄ',      name: 'Placeholder' },
 ]
 
-// Stacked cards data — placeholder-kortit, kuva tulee taustalle
 const cards = [
-  { id: 1, label: 'Placeholder' },
-  { id: 2, label: 'Placeholder' },
-  { id: 3, label: 'Placeholder' },
-  { id: 4, label: 'Placeholder' },
-  { id: 5, label: 'Placeholder' },
+  { id: 1, label: 'sisallontuottaja_01', img: '/sisallontuottaja_01.avif' },
+  { id: 2, label: 'sisallontuottaja_02', img: '/sisallontuottaja_02.avif' },
+  { id: 3, label: 'sisallontuottaja_03', img: '/sisallontuottaja_03.avif' },
+  { id: 4, label: 'sisallontuottaja_04', img: '/sisallontuottaja_04.avif' },
 ]
 
 function useTickSound() {
   const audioCtx = useRef(null)
-
-  function playTick() {
+  return function playTick() {
     try {
-      if (!audioCtx.current) {
-        audioCtx.current = new (window.AudioContext || window.webkitAudioContext)()
-      }
+      if (!audioCtx.current) audioCtx.current = new (window.AudioContext || window.webkitAudioContext)()
       const ctx = audioCtx.current
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.connect(gain)
       gain.connect(ctx.destination)
       osc.type = 'sine'
-      osc.frequency.setValueAtTime(880, ctx.currentTime)
-      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.06)
-      gain.gain.setValueAtTime(0.18, ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09)
+      osc.frequency.setValueAtTime(920, ctx.currentTime)
+      osc.frequency.exponentialRampToValueAtTime(460, ctx.currentTime + 0.07)
+      gain.gain.setValueAtTime(0.15, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1)
       osc.start(ctx.currentTime)
-      osc.stop(ctx.currentTime + 0.1)
+      osc.stop(ctx.currentTime + 0.11)
     } catch (_) {}
   }
-
-  return playTick
 }
+
+const CARD_W = 260
+const PEEK   = CARD_W * 0.40 // 40%
 
 function StackedCards() {
   const [activeCard, setActiveCard] = useState(null)
-  const [prevCard, setPrevCard] = useState(null)
   const playTick = useTickSound()
 
   function handleEnter(id) {
     if (id !== activeCard) {
-      setPrevCard(activeCard)
       setActiveCard(id)
       playTick()
     }
   }
 
-  function handleLeave() {
-    setPrevCard(activeCard)
-    setActiveCard(null)
-  }
-
-  // Stack offset: each card peeks 30% of card width from behind previous
-  const CARD_W = 220 // px, matches CSS
-  const PEEK = CARD_W * 0.30 // 30% peek
-
   return (
-    <div className="tiimi__stack-scene" onMouseLeave={handleLeave}>
+    <div
+      className="tiimi__stack-scene"
+      onMouseLeave={() => setActiveCard(null)}
+      style={{ width: `${CARD_W + (cards.length - 1) * PEEK}px` }}
+    >
       {cards.map((card, i) => {
-        const isActive = activeCard === card.id
+        const isActive   = activeCard === card.id
         const isInactive = activeCard !== null && !isActive
-
-        // Left offset: first card is leftmost, each subsequent peeks right
-        const baseLeft = i * PEEK
-
         return (
           <div
             key={card.id}
-            className={`tiimi__card${isActive ? ' tiimi__card--active' : ''}${isInactive ? ' tiimi__card--dim' : ''}`}
+            className={[
+              'tiimi__card',
+              isActive   ? 'tiimi__card--active'   : '',
+              isInactive ? 'tiimi__card--dim' : '',
+            ].filter(Boolean).join(' ')}
             style={{
-              left: `${baseLeft}px`,
+              left:   `${i * PEEK}px`,
               zIndex: isActive ? 50 : cards.length - i,
             }}
             onMouseEnter={() => handleEnter(card.id)}
           >
-            {/* Placeholder bg image area */}
-            <div className="tiimi__card-bg">
-              <div className="tiimi__card-bg-placeholder" />
-            </div>
+            {/* Background image */}
+            <div
+              className="tiimi__card-bg"
+              style={{ backgroundImage: `url('${card.img}')` }}
+            />
 
-            {/* Card content */}
+            {/* Dark overlay */}
+            <div className="tiimi__card-overlay" />
+
+            {/* Label at 1/3 from top */}
             <div className="tiimi__card-inner">
               <span className="tiimi__card-label">{card.label}</span>
             </div>
 
-            {/* Green accent line at bottom */}
+            {/* Green accent bottom */}
             <div className="tiimi__card-accent" />
           </div>
         )
@@ -128,67 +96,63 @@ function StackedCards() {
   )
 }
 
+function Avatar({ tag, name }) {
+  return (
+    <div className="tiimi__member">
+      <div className="tiimi__photo">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <circle cx="24" cy="18" r="10" stroke="#e8e8e8" strokeWidth="2" />
+          <path d="M4 44c0-11 8.954-20 20-20s20 8.954 20 20" stroke="#e8e8e8" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="tiimi__member-info">
+        <p className="tiimi__member-role">{tag}</p>
+        <p className="tiimi__member-name">{name}</p>
+        <p className="tiimi__member-bio">Placeholder bio text goes here.</p>
+      </div>
+    </div>
+  )
+}
+
 export default function Tiimi() {
   const founders = teamMembers.slice(0, 2)
-  const sellers = teamMembers.slice(2, 4)
+  const sellers  = teamMembers.slice(2, 4)
 
   return (
-    <section className="tiimi">
-      {/* Ambient bg matching hero */}
-      <div className="tiimi__bg" aria-hidden="true" />
+    <section className="tiimi" id="tiimi">
+      <div className="tiimi__inner">
 
-      <div className="tiimi__container">
+        {/* Header */}
+        <div className="tiimi__header">
+          <p className="tiimi__label">TIIMI</p>
+          <h1 className="tiimi__title">Ihmiset<br />tuloksien takana</h1>
+        </div>
 
-        {/* Section eyebrow */}
-        <p className="tiimi__eyebrow">TIIMI</p>
-        <h2 className="tiimi__title">
-          Ihmiset<br />
-          <span className="tiimi__title-glow">→Tuloksien takana</span>
-        </h2>
+        {/* Mission */}
+        <div className="tiimi__mission">
+          <p className="tiimi__mission-text">
+            Somesankarit on tiimi, joka muuttaa some-näkyvyyden mitattavaksi liiketoiminnaksi.
+            Jokainen meistä tuo pöytään oman erikoisosaamisensa — yhdessä teemme tulosta.
+          </p>
+        </div>
 
         {/* Row 1: Founder + Co-Founder */}
-        <div className="tiimi__avatars tiimi__avatars--top">
-          {founders.map((m) => (
-            <div key={m.id} className="tiimi__avatar-card">
-              <div className="tiimi__avatar-img tiimi__avatar-img--square">
-                <div className="tiimi__avatar-placeholder">
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                    <circle cx="24" cy="18" r="10" stroke="rgba(74,222,128,0.4)" strokeWidth="2" />
-                    <path d="M4 44c0-11 8.954-20 20-20s20 8.954 20 20" stroke="rgba(74,222,128,0.4)" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-              </div>
-              <div className="tiimi__avatar-info">
-                <span className="tiimi__avatar-tag">{m.tag}</span>
-                <span className="tiimi__avatar-name">{m.name}</span>
-              </div>
-            </div>
-          ))}
+        <div className="tiimi__team tiimi__team--founders">
+          {founders.map(m => <Avatar key={m.id} {...m} />)}
         </div>
 
         {/* Row 2: Myyjä + Myyjä */}
-        <div className="tiimi__avatars tiimi__avatars--bottom">
-          {sellers.map((m) => (
-            <div key={m.id} className="tiimi__avatar-card">
-              <div className="tiimi__avatar-img tiimi__avatar-img--square">
-                <div className="tiimi__avatar-placeholder">
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                    <circle cx="24" cy="18" r="10" stroke="rgba(74,222,128,0.4)" strokeWidth="2" />
-                    <path d="M4 44c0-11 8.954-20 20-20s20 8.954 20 20" stroke="rgba(74,222,128,0.4)" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-              </div>
-              <div className="tiimi__avatar-info">
-                <span className="tiimi__avatar-tag">{m.tag}</span>
-                <span className="tiimi__avatar-name">{m.name}</span>
-              </div>
-            </div>
-          ))}
+        <div className="tiimi__team tiimi__team--sellers">
+          {sellers.map(m => <Avatar key={m.id} {...m} />)}
         </div>
 
-        {/* Stacked cards section */}
+        {/* Divider */}
+        <div className="tiimi__divider" />
+
+        {/* Stacked cards */}
         <div className="tiimi__cards-section">
-          <p className="tiimi__cards-label">REFERENSSIT</p>
+          <p className="tiimi__label">SISÄLLÖNTUOTTAJAT</p>
+          <h2 className="tiimi__cards-title">Sisältö, joka myy</h2>
           <StackedCards />
         </div>
 
