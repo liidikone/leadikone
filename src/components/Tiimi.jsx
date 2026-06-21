@@ -137,7 +137,7 @@ export default function Tiimi() {
       <div className="tiimi-page__inner">
 
         <div className="tiimi-page__header">
-          <h1 className="tiimi-page__title">Ihmiset kasvun takana</h1>
+          <h1 className="tiimi-page__title">Osaajat kasvun takana</h1>
         </div>
 
         <div className="tiimi-page__mission">
