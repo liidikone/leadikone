@@ -2,10 +2,10 @@ import { useRef, useState } from 'react'
 import '../styles/Tiimi.css'
 
 const teamMembers = [
-  { id: 1, tag: 'FOUNDER',          name: 'Santeri Koskinen', img: '/santeri.avif' },
-  { id: 2, tag: 'CO-FOUNDER',       name: 'Jani Karkulahti',  img: '/jani.avif' },
-  { id: 3, tag: 'ASIAKASPÄÄLLIKKÖ', name: 'Placeholder' },
-  { id: 4, tag: 'ASIAKASPÄÄLLIKKÖ', name: 'Placeholder' },
+  { id: 1, tag: 'FOUNDER',          name: 'Santeri Koskinen', img: '/santeri.avif', phone: '+358 50 123 1234', email: 'santeri@palceholder.com' },
+  { id: 2, tag: 'CO-FOUNDER',       name: 'Jani Karkulahti',  img: '/jani.avif',    phone: '+358 40 123 1234', email: 'jani@placeholder.com' },
+  { id: 3, tag: 'ASIAKASPÄÄLLIKKÖ', name: 'Placeholder', email: 'kasvu@placeholder.com' },
+  { id: 4, tag: 'ASIAKASPÄÄLLIKKÖ', name: 'Placeholder', email: 'kasvu@placeholder.com' },
 ]
 
 const cards = [
@@ -108,7 +108,7 @@ function StackedCards() {
   )
 }
 
-function Member({ tag, name, img }) {
+function Member({ tag, name, img, phone, email }) {
   return (
     <div className="tm-card">
       <div className="tm-avatar">
@@ -123,7 +123,10 @@ function Member({ tag, name, img }) {
       </div>
       <p className="tm-role">{tag}</p>
       <p className="tm-name">{name}</p>
-      <p className="tm-bio">Placeholder bio text goes here.</p>
+      <div className="tm-contact">
+        {phone && <a href={`tel:${phone.replace(/\s+/g, '')}`} className="tm-contact__link">{phone}</a>}
+        {email && <a href={`mailto:${email}`} className="tm-contact__link">{email}</a>}
+      </div>
     </div>
   )
 }
