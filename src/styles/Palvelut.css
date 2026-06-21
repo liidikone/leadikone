@@ -1,145 +1,44 @@
-/* ============================================================
-   PALVELUT PAGE — unique prefixes to avoid collisions
-   ============================================================ */
+import '../styles/Palvelut.css'
 
-.palvelut-page {
-  background: #ffffff url('/tiimi-bg.avif') center top / cover no-repeat fixed;
-  min-height: 100vh;
-  padding-top: 80px; /* nav height */
-  padding-bottom: 6rem;
-  border-top: 1px solid rgba(255,255,255,0.15);
+const services = [
+  { id: 1, title: 'Lyhytvideot',            text: 'Lisäävät näkyvyyttä ja kasvattavat liidien määrää',   image: '/video.avif' },
+  { id: 2, title: 'Verkkosivut',            text: 'Rakennettu tuottamaan liidejä funnelien avulla',        image: '/www.avif'   },
+  { id: 3, title: 'Kehyttävät AI agentit',  text: 'Automatisoivat asiakaspalvelua ja liidien keruuta',    image: '/ai.avif'    },
+]
+
+function ServiceCard({ title, text, image }) {
+  return (
+    <div className="ps-card">
+      <div className="ps-card__bg" style={{ backgroundImage: `url('${image}')` }} />
+      <div className="ps-card__overlay" />
+      <div className="ps-card__body">
+        <h3 className="ps-card__title">{title}</h3>
+        <p className="ps-card__text">{text}</p>
+      </div>
+    </div>
+  )
 }
 
-.palvelut-page__inner {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: clamp(1.5rem, 4vw, 5rem);
-  padding-right: clamp(1.5rem, 4vw, 5rem);
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
-  padding-top: 4rem;
-}
+export default function Palvelut() {
+  return (
+    <section className="palvelut-page">
+      <div className="palvelut-page__inner">
 
-/* ============================================================
-   HEADER
-   ============================================================ */
-.palvelut-page__header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 900px;
-}
+        <div className="palvelut-page__header">
+          <h1 className="palvelut-page__title">Kun asiakkaat etsivät,<br />sinä olet näkyvillä</h1>
+        </div>
 
-.palvelut-page__title {
-  font-family: 'Falzon', 'Oxanium', sans-serif;
-  font-style: italic;
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  margin: 0;
-}
+        <div className="palvelut-page__mission">
+          <p className="palvelut-page__mission-text">
+Et voi välttää digitaalista muutosta, jossa ihmiset kohtaavat sisältöjä hakukoneissa, sosiaalisessa mediassa, verkkosivuilla ja mainonnassa. Autamme sinua olemaan mukana siellä, missä asiakkaiden kiinnostus syntyy. Liidikone huolehtii, että markkinointisi, materiaalisi ja työkalusi pysyvät ajan tasalla, jotta tavoitat oikeat ihmiset oikeaan aikaan.
+          </p>
+        </div>
 
-/* ============================================================
-   MISSION
-   ============================================================ */
-.palvelut-page__mission {
-  max-width: 680px;
-  border-left: 2px solid rgba(255,255,255,0.4);
-  padding-left: 1.5rem;
-}
+        <div className="palvelut-page__services">
+          {services.map(s => <ServiceCard key={s.id} {...s} />)}
+        </div>
 
-.palvelut-page__mission-text {
-  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
-  font-weight: 300;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.7);
-  margin: 0;
-}
-
-/* ============================================================
-   SERVICE CARDS
-   ============================================================ */
-.palvelut-page__services {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-}
-
-.ps-card {
-  position: relative;
-  height: 340px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.ps-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 48px rgba(0,0,0,0.22), 0 0 0 2px #4ade80;
-}
-
-.ps-card__bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.3;
-}
-
-.ps-card__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.15) 0%,
-    rgba(0,0,0,0.25) 40%,
-    rgba(0,0,0,0.75) 100%
-  );
-}
-
-.ps-card__body {
-  position: absolute;
-  z-index: 2;
-  left: 1.5rem;
-  right: 1.5rem;
-  bottom: 1.5rem;
-}
-
-.ps-card__title {
-  font-family: 'Falzon', 'Oxanium', sans-serif;
-  font-style: italic;
-  font-size: clamp(2rem, 3vw, 2.6rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.05;
-  color: #ffffff;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
-  margin: 0 0 0.5rem;
-}
-
-.ps-card__text {
-  font-size: 0.95rem;
-  font-weight: 300;
-  line-height: 1.5;
-  color: rgba(255,255,255,0.85);
-  margin: 0;
-}
-
-/* ============================================================
-   MOBILE
-   ============================================================ */
-@media (max-width: 768px) {
-  .palvelut-page__title {
-    font-size: clamp(1.6rem, 7vw, 2.4rem);
-  }
-
-  .palvelut-page__services {
-    grid-template-columns: 1fr;
-  }
+      </div>
+    </section>
+  )
 }
