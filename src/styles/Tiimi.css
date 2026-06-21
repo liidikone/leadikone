@@ -79,6 +79,10 @@
   grid-template-columns: 1fr 1fr;
 }
 
+.tiimi-page__grid--creators {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 /* ============================================================
    MEMBER CARD
    ============================================================ */
