@@ -157,6 +157,11 @@ html {
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;
   overflow-y: auto;
+  background: var(--hero-bg) url('/leadikone-bg.avif') center top / cover no-repeat;
+}
+
+html.bg-light {
+  background: var(--bg-primary);
 }
 
 body {
