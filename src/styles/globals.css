@@ -208,44 +208,51 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    PAGE SLIDE TRANSITIONS
    ============================================================ */
 
-@keyframes slide-in-from-right {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
-}
-
-@keyframes slide-in-from-left {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(0); }
-}
-
-@keyframes slide-out-to-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
-}
-
-@keyframes slide-out-to-right {
-  from { transform: translateX(0); }
-  to   { transform: translateX(100%); }
-}
-
-.page-wrapper {
+.slide-container {
   position: relative;
   width: 100%;
   overflow: hidden;
 }
 
-.page-enter {
+.slide-page {
+  width: 100%;
+}
+
+/* Uusi sivu tulee sisään */
+.slide-enter--forward {
+  animation: slide-in-right 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide-enter--backward {
+  animation: slide-in-left 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Vanha sivu lähtee ulos */
+.slide-exit {
   position: absolute;
   inset: 0;
-  will-change: transform;
+  z-index: 1;
+  pointer-events: none;
+}
+.slide-exit--forward {
+  animation: slide-out-left 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide-exit--backward {
+  animation: slide-out-right 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Navigating forward (→): new page comes from right */
-[data-direction="forward"] .page-enter {
-  animation: slide-in-from-right 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
-
-/* Navigating backward (←): new page comes from left */
-[data-direction="backward"] .page-enter {
-  animation: slide-in-from-left 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slide-out-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+@keyframes slide-out-right {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
 }
