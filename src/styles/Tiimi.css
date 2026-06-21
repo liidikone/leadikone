@@ -62,7 +62,7 @@
 
   .tiimi-page__title { font-size: clamp(1.8rem, 4vw, 3.4rem); white-space: normal; }
   .tiimi-page__mission-text { font-size: clamp(0.95rem, 1.3vw, 1.1rem); }
-  .tiimi-page__cards-title { font-size: clamp(1.4rem, 2.2vw, 2rem); margin-bottom: 0.5rem; position: relative; left: 55px; }
+  .tiimi-page__cards-title { font-size: clamp(1.4rem, 2.2vw, 2rem); margin-bottom: 0.5rem; position: relative; left: 51px; }
 
   .tc-scene { zoom: 0.78; }
 
