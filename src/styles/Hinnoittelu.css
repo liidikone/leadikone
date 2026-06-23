@@ -46,12 +46,8 @@
   margin: 0;
 }
 
-.hinnoittelu__title-accent {
-  display: block;
-  font-size: 0.65em;
-  margin-top: 0.05em;
-  color: #000000;
-  opacity: 1;
+.hinnoittelu__title-on {
+  color: #00ff88;
 }
 
 .hinnoittelu__lead {
