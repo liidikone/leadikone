@@ -1,21 +1,32 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import '../styles/Vaikuttajat.css'
 
 const CARD_W = 260
-const PEEK   = Math.round(CARD_W * 0.40)
+const CARDS_PER_PAGE = 8
+const TOTAL_CARDS = 16
 
 function useCardSound() {
   const audioCtx = useRef(null)
-  function getCtx() {
-    if (!audioCtx.current) {
-      audioCtx.current = new (window.AudioContext || window.webkitAudioContext)()
+
+  // Pre-init AudioContext on first user gesture anywhere on the page
+  useEffect(() => {
+    function initCtx() {
+      if (!audioCtx.current) {
+        audioCtx.current = new (window.AudioContext || window.webkitAudioContext)()
+      }
     }
-    if (audioCtx.current.state === 'suspended') audioCtx.current.resume()
-    return audioCtx.current
-  }
-  return function playCardSound() {
+    window.addEventListener('pointerdown', initCtx, { once: true })
+    return () => window.removeEventListener('pointerdown', initCtx)
+  }, [])
+
+  return useCallback(function playCardSound() {
     try {
-      const ctx = getCtx()
+      if (!audioCtx.current) {
+        audioCtx.current = new (window.AudioContext || window.webkitAudioContext)()
+      }
+      const ctx = audioCtx.current
+      if (ctx.state === 'suspended') ctx.resume()
+
       const now = ctx.currentTime
       const dur = 0.09
       const bufferSize = Math.floor(ctx.sampleRate * dur)
@@ -40,7 +51,7 @@ function useCardSound() {
       noise.start(now)
       noise.stop(now + dur)
     } catch (_) {}
-  }
+  }, [])
 }
 
 const influencers = [
@@ -62,57 +73,101 @@ const influencers = [
   { id: 16, label: null, img: null },
 ]
 
+const totalPages = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE)
+
 function StackedCards() {
   const [activeCard, setActiveCard] = useState(null)
+  const [page, setPage] = useState(0)
   const playCardSound = useCardSound()
-  const stackWidth = CARD_W + (influencers.length - 1) * PEEK
+
+  const pageCards = influencers.slice(page * CARDS_PER_PAGE, (page + 1) * CARDS_PER_PAGE)
+  const PEEK = Math.round(CARD_W * 0.40)
+  const stackWidth = CARD_W + (pageCards.length - 1) * PEEK
 
   function handleEnter(id) {
-    if (id !== activeCard) { setActiveCard(id); playCardSound() }
+    if (id !== activeCard) {
+      setActiveCard(id)
+      playCardSound()
+    }
+  }
+
+  function handlePageChange(newPage) {
+    setActiveCard(null)
+    setPage(newPage)
   }
 
   return (
-    <div
-      className="vi-scene"
-      style={{ width: stackWidth + 'px', height: '380px' }}
-      onMouseLeave={() => setActiveCard(null)}
-    >
-      {influencers.map((card, i) => {
-        const isActive = activeCard === card.id
-        const isDim    = activeCard !== null && !isActive
-        const isEmpty  = !card.img
+    <div className="vi-wrapper">
+      <div
+        className="vi-scene-wrap"
+        onMouseLeave={() => setActiveCard(null)}
+      >
+        <div
+          className="vi-scene"
+          style={{ width: stackWidth + 'px', height: '380px' }}
+        >
+          {pageCards.map((card, i) => {
+            const isActive = activeCard === card.id
+            const isDim    = activeCard !== null && !isActive
+            const isEmpty  = !card.img
 
-        return (
-          <div
-            key={card.id}
-            className={
-              'vi-card' +
-              (isActive ? ' vi-card--active' : '') +
-              (isDim    ? ' vi-card--dim'    : '') +
-              (isEmpty  ? ' vi-card--empty'  : ' vi-card--filled')
-            }
-            style={{ left: i * PEEK + 'px', zIndex: isActive ? 50 : influencers.length - i }}
-            onMouseEnter={() => handleEnter(card.id)}
-          >
-            {isEmpty ? (
-              <>
-                <div className="vi-card__inset">
-                  <span className="vi-card__qmark">?</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
-                <div className="vi-card__overlay" />
-                <div className="vi-card__body">
-                  <span className="vi-card__label">{card.label}</span>
-                </div>
-                <div className="vi-card__accent" />
-              </>
-            )}
-          </div>
-        )
-      })}
+            return (
+              <div
+                key={card.id}
+                className={
+                  'vi-card' +
+                  (isActive ? ' vi-card--active' : '') +
+                  (isDim    ? ' vi-card--dim'    : '') +
+                  (isEmpty  ? ' vi-card--empty'  : ' vi-card--filled')
+                }
+                style={{ left: i * PEEK + 'px', zIndex: isActive ? 50 : pageCards.length - i }}
+                onMouseEnter={() => handleEnter(card.id)}
+              >
+                {isEmpty ? (
+                  <div className="vi-card__inset">
+                    <span className="vi-card__qmark">?</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
+                    <div className="vi-card__overlay" />
+                    <div className="vi-card__body">
+                      <span className="vi-card__label">{card.label}</span>
+                    </div>
+                    <div className="vi-card__accent" />
+                  </>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Slider / pagination */}
+      <div className="vi-pagination">
+        <div className="vi-slider-track">
+          <input
+            type="range"
+            min={0}
+            max={totalPages - 1}
+            value={page}
+            onChange={e => handlePageChange(Number(e.target.value))}
+            className="vi-slider"
+            aria-label="Selaa vaikuttajia"
+          />
+        </div>
+        <div className="vi-page-dots">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              className={'vi-dot' + (i === page ? ' vi-dot--active' : '')}
+              onClick={() => handlePageChange(i)}
+              aria-label={`Sivu ${i + 1}`}
+            />
+          ))}
+        </div>
+        <span className="vi-page-label">{page + 1} / {totalPages}</span>
+      </div>
     </div>
   )
 }
@@ -132,9 +187,7 @@ export default function Vaikuttajat() {
           </p>
         </div>
 
-        <div className="vi-scene-wrap">
-          <StackedCards />
-        </div>
+        <StackedCards />
 
       </div>
     </section>
