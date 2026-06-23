@@ -64,6 +64,9 @@ function VideoPackage() {
 
   return (
     <div className="hp-package">
+      <div className="hp-package__desc">
+        Lyhytvideot lisäävät tunnettuutta, sitouttavat yleisöä ja ohjaavat potentiaalisia asiakkaita palveluidesi pariin.
+      </div>
       <div className="hp-configurator">
 
         <div className="hp-config-group">
@@ -129,7 +132,9 @@ function VideoPackage() {
             >
               <span className="hp-toggle__check" style={wantInfluencer ? { background: '#00ff88', borderColor: '#00ff88', color: '#000000' } : {}}>{wantInfluencer ? '✓' : '+'}</span>
               <span className="hp-toggle__text">
-                Haluan teiltä vaikuttajan videoille
+                Haluan SOMETON{' '}
+                <span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span>
+                {' '}vaikuttajan videoille
               </span>
               <span className="hp-toggle__price">200€/kk</span>
             </button>
@@ -139,7 +144,9 @@ function VideoPackage() {
             >
               <span className="hp-toggle__check" style={wantManagement ? { background: '#00ff88', borderColor: '#00ff88', color: '#000000' } : {}}>{wantManagement ? '✓' : '+'}</span>
               <span className="hp-toggle__text">
-                SOMETON lisää videot
+                Haluan että SOMETON{' '}
+                <span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span>
+                {' '}huolehtii videoiden julkaisemisesta
               </span>
               <span className="hp-toggle__price">100€/kk</span>
             </button>
@@ -275,6 +282,9 @@ function WebsitePackage() {
 
   return (
     <div className="hp-package">
+      <div className="hp-package__desc">
+        Verkkosivut luovat vahvan ensivaikutelman ja muuttavat kävijät yhteydenotoiksi sekä liideiksi.
+      </div>
       <div className="hp-configurator">
 
         <div className="hp-config-group">
@@ -429,12 +439,6 @@ const TABS = [
   { id: 'ai', label: 'AI agentti', component: AIPackage, coming: true },
 ]
 
-const TAB_DESCRIPTIONS = {
-  video: 'Lyhytvideot lisäävät tunnettuutta, sitouttavat yleisöä ja ohjaavat potentiaalisia asiakkaita palveluidesi pariin.',
-  web: 'Verkkosivut luovat vahvan ensivaikutelman ja muuttavat kävijät yhteydenotoiksi sekä liideiksi.',
-  ai: '',
-}
-
 /* ── MAIN EXPORT ─────────────────────────────────────────── */
 export default function Hinnoittelu() {
   const [activeTab, setActiveTab] = useState('video')
@@ -468,10 +472,6 @@ export default function Hinnoittelu() {
               </button>
             ))}
           </div>
-
-          {TAB_DESCRIPTIONS[activeTab] && (
-            <p className="hp-tab-description">{TAB_DESCRIPTIONS[activeTab]}</p>
-          )}
 
           {ActiveComponent && <ActiveComponent />}
         </div>
