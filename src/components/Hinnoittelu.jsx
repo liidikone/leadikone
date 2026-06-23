@@ -64,7 +64,7 @@ function VideoPackage() {
 
   return (
     <div className="hp-package">
-      <div className="hp-package__desc">
+      <div className="hp-package__desc" style={{ padding: '1.2rem 1.5rem 0', color: 'rgba(255,255,255,0.45)', fontSize: '0.78rem', lineHeight: 1.5 }}>
         Lyhytvideot lisäävät tunnettuutta, sitouttavat yleisöä ja ohjaavat potentiaalisia asiakkaita palveluidesi pariin.
       </div>
       <div className="hp-configurator">
@@ -132,9 +132,7 @@ function VideoPackage() {
             >
               <span className="hp-toggle__check" style={wantInfluencer ? { background: '#00ff88', borderColor: '#00ff88', color: '#000000' } : {}}>{wantInfluencer ? '✓' : '+'}</span>
               <span className="hp-toggle__text">
-                Haluan SOMETON{' '}
-                <span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span>
-                {' '}vaikuttajan videoille
+                Haluan SOMET<span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span> vaikuttajan videoille
               </span>
               <span className="hp-toggle__price">200€/kk</span>
             </button>
@@ -144,9 +142,7 @@ function VideoPackage() {
             >
               <span className="hp-toggle__check" style={wantManagement ? { background: '#00ff88', borderColor: '#00ff88', color: '#000000' } : {}}>{wantManagement ? '✓' : '+'}</span>
               <span className="hp-toggle__text">
-                Haluan että SOMETON{' '}
-                <span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span>
-                {' '}huolehtii videoiden julkaisemisesta
+                Haluan että SOMET<span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span> huolehtii videoiden julkaisemisesta
               </span>
               <span className="hp-toggle__price">100€/kk</span>
             </button>
@@ -282,7 +278,7 @@ function WebsitePackage() {
 
   return (
     <div className="hp-package">
-      <div className="hp-package__desc">
+      <div className="hp-package__desc" style={{ padding: '1.2rem 1.5rem 0', color: 'rgba(255,255,255,0.45)', fontSize: '0.78rem', lineHeight: 1.5 }}>
         Verkkosivut luovat vahvan ensivaikutelman ja muuttavat kävijät yhteydenotoiksi sekä liideiksi.
       </div>
       <div className="hp-configurator">
