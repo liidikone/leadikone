@@ -65,6 +65,12 @@
 /* ── FILLED CARD ───────────────────────────────────────────── */
 .vi-card--filled {
   cursor: pointer;
+  filter: grayscale(100%);
+}
+
+.vi-card--filled:hover {
+  filter: grayscale(0%);
+  transition: filter 0.3s ease;
 }
 
 .vi-card__bg {
