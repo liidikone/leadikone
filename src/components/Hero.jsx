@@ -65,6 +65,8 @@ export default function Hero() {
   // suomen terassilasitus, renkaatalle, gold store, synabs, xpower, synabs, verkkopantteri
   const logos = [
     '/referenssit/gold_store_finland_500px.avif',
+    '/referenssit/verkkopantteri_500px.avif',
+    '/referenssit/xpower_membership_egym_500px.avif',
     '/referenssit/autodel_500px.avif',
     '/referenssit/autokeskus_haapala_500px.avif',
     '/referenssit/flyers_500px.avif',
@@ -72,8 +74,6 @@ export default function Hero() {
     '/referenssit/renkaatalle_500px.avif',
     '/referenssit/suomen_terassilasitus_500px.avif',
     '/referenssit/synabs_500px.avif',
-    '/referenssit/xpower_membership_egym_500px.avif',
-    '/referenssit/verkkopantteri_500px.avif',
   ]
 
   // 4x toisto saumatonta looppia varten
