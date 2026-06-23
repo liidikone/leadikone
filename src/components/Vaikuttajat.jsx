@@ -176,7 +176,7 @@ export default function Vaikuttajat() {
       <div className="vaikuttajat__inner">
         <div className="vaikuttajat__header">
           <h2 className="vaikuttajat__title">
-            "SOMET<span className="vaikuttajat__title-on">ON</span>"
+            SOMET<span className="vaikuttajat__title-on">ON</span>
             <span className="vaikuttajat__title-accent">vaikuttajilla</span>
           </h2>
           <p className="vaikuttajat__lead">
