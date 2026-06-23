@@ -75,8 +75,8 @@
 /* ── FLOATING STACK ARROW ──────────────────────────────────── */
 .vi-stack-arrow-wrap {
   position: absolute;
-  right: -22px;
-  top: 50%;
+  right: -18px;
+  top: calc(1.5rem + 360px / 2);
   transform: translateY(-50%);
   z-index: 100;
 }
