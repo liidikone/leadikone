@@ -70,7 +70,6 @@ export default function Hero() {
     '/referenssit/ilona_tampere_500px.avif',
     '/referenssit/renkaatalle_500px.avif',
     '/referenssit/suomen_terassilasitus_500px.avif',
-    '/referenssit/renkaatalle_500px.avif',
     '/referenssit/gold_store_finland_500px.avif',
     '/referenssit/synabs_500px.avif',
     '/referenssit/xpower_membership_egym_500px.avif',
