@@ -9,14 +9,14 @@
 }
 
 .hinnoittelu__inner {
-  max-width: 1200px;
+  max-width: 860px;
   margin-left: auto;
   margin-right: auto;
   padding-left: clamp(1.5rem, 4vw, 5rem);
   padding-right: clamp(1.5rem, 4vw, 5rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(3rem, 6vw, 5rem);
+  gap: clamp(2.5rem, 5vw, 4rem);
 }
 
 /* ── Header ── */
@@ -24,7 +24,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 700px;
+  max-width: 600px;
 }
 
 .hinnoittelu__eyebrow {
@@ -52,78 +52,91 @@
 }
 
 .hinnoittelu__lead {
-  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
   font-weight: 300;
   line-height: 1.6;
   color: #888888;
   margin: 0;
 }
 
-/* ── Grid ── */
-.hinnoittelu__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  align-items: start;
+/* ── Tabs ── */
+.hp-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #222222;
+}
+
+.hp-tab {
+  position: relative;
+  padding: 0.7rem 1.4rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #555555;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hp-tab:hover {
+  color: #aaaaaa;
+}
+
+.hp-tab--active {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.hp-tab--coming {
+  cursor: default;
+  color: #3a3a3a;
+}
+
+.hp-tab--coming:hover {
+  color: #3a3a3a;
+}
+
+.hp-tab__soon {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3a3a3a;
+  padding: 1px 5px;
+  border: 1px solid #2a2a2a;
+  border-radius: 99px;
 }
 
 /* ── Package card ── */
 .hp-package {
   background: #111111;
   border: 1px solid #222222;
-  border-radius: 12px;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .hp-package--coming {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.hp-package__header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.5rem 1.5rem 0;
-}
-
-.hp-package__icon {
-  font-size: 1.5rem;
-  line-height: 1;
-  flex-shrink: 0;
-  margin-top: 0.1rem;
-}
-
-.hp-package__title {
-  font-family: 'Falzon', 'Oxanium', sans-serif;
-  font-style: italic;
-  font-size: clamp(1.4rem, 2vw, 1.8rem);
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: #ffffff;
-  margin: 0 0 0.2rem;
-}
-
-.hp-package__sub {
-  font-size: 0.82rem;
-  font-weight: 300;
-  color: #666666;
-  margin: 0;
-}
-
-.hp-package__sub--muted {
-  color: #555555;
+  min-height: 180px;
+  justify-content: center;
+  opacity: 0.5;
 }
 
 /* ── Configurator ── */
 .hp-configurator {
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  flex: 1;
 }
 
 .hp-config-group {
@@ -399,7 +412,6 @@
 
 /* ── Summary ── */
 .hp-summary {
-  margin-top: auto;
   border-top: 1px solid #222222;
   padding: 1.25rem 1.5rem 1.5rem;
   display: flex;
@@ -453,22 +465,21 @@
 }
 
 /* ── Coming soon ── */
-.hp-coming-body {
-  padding: 1.25rem 1.5rem 2rem;
-}
-
 .hp-coming-text {
+  padding: 2rem 1.5rem;
   font-size: 0.9rem;
   font-weight: 300;
   color: #555555;
-  font-style: italic;
   line-height: 1.5;
 }
 
 /* ── Mobile ── */
-@media (max-width: 900px) {
-  .hinnoittelu__grid {
-    grid-template-columns: 1fr;
-    max-width: 520px;
+@media (max-width: 600px) {
+  .hp-tab {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.8rem;
+  }
+  .hp-pills {
+    flex-wrap: wrap;
   }
 }
