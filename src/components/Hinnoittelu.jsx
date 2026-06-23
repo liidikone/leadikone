@@ -273,7 +273,7 @@ function WebsitePackage() {
   const [maintenance, setMaintenance] = useState('vakio')
   const [wantBrand, setWantBrand] = useState(false)
 
-  const pagePrices = { '1-5': 800, '6-10': 1500, '10+': 2500 }
+  const pagePrices = { '1-5': 1000, '6-10': 2000, '10+': 4000 }
   const maintenancePrices = { vakio: 100, tasma: 249 }
 
   return (
@@ -287,9 +287,9 @@ function WebsitePackage() {
           <label className="hp-label">Sivujen määrä</label>
           <div className="hp-pills">
             {[
-              { k: '1-5', label: '1–5 sivua', price: 800 },
-              { k: '6-10', label: '6–10 sivua', price: 1500 },
-              { k: '10+', label: '+10 sivua', price: 2500, prefix: 'alk. ' },
+              { k: '1-5', label: '1–5 sivua', price: 1000 },
+              { k: '6-10', label: '6–10 sivua', price: 2000 },
+              { k: '10+', label: '+10 sivua', price: 4000, prefix: 'alk. ' },
             ].map(({ k, label, price, prefix }) => (
               <button
                 key={k}
@@ -336,8 +336,8 @@ function WebsitePackage() {
                 {maintenance === 'vakio' ? '✓' : ''}
               </span>
               <span className="hp-toggle__text">
-                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>VAKIO (helppo ja vaivaton)</strong>
-                <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>sis. hosting, teknisen tuen, päivitykset ja ylläpidon</span>
+                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>VAKIO (helppo ja vaivaton 12 kuukautta)</strong>
+                <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>SOMET<span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span> pitää verkkosivusi ajan tasalla ja toimintavarmana. Paketti sisältää hostingin, teknisen tuen, päivitykset ja jatkuvan ylläpidon.</span>
               </span>
               <span className="hp-toggle__price">100€/kk</span>
             </button>
@@ -350,9 +350,8 @@ function WebsitePackage() {
                 {maintenance === 'tasma' ? '✓' : ''}
               </span>
               <span className="hp-toggle__text">
-                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>TÄSMÄ (analyyttinen kasvu)</strong>
-                <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>sis. VAKIO ominaisuudet + dataan perustuva kuukausikohtainen optimointi</span>
-                <span style={{ display: 'block', fontWeight: 300, fontSize: '0.78rem', opacity: 0.75, marginTop: '0.1rem' }}>(Google Analytics + Microsoft Clarity)</span>
+                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>TÄSMÄ (analyyttinen kasvu 12 kuukautta)</strong>
+                <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>sis. VAKIO ominaisuudet + SOMET<span style={{ color: '#00ff88', fontWeight: 700 }}>ON</span> auttaa kasvattamaan verkkosivustosi tuloksia datan avulla. Seuranta, analyysi ja kuukausittaiset optimoinnit perustuvat todelliseen kävijäkäyttäytymiseen (Google Analytics + Microsoft Clarity).</span>
               </span>
               <span className="hp-toggle__price">249€/kk</span>
             </button>
