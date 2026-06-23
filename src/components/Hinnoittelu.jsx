@@ -234,30 +234,32 @@ const websiteDetails = [
     heading: 'Suunnittelu',
     items: [
       'Tavoitteiden ja kohderyhmän määrittely',
-      'Sivuston rakenteen suunnittelu (wireframe)',
-      'Visuaalinen ilme: värit, fontit, tyyli',
+      'Verkkosivuston rakenteen ja layoutin suunnittelu',
+      'Visuaalisen ilmeen suunnittelu: värit, fontit ja tyyli',
     ],
   },
   {
     heading: 'Tekninen toteutus',
     items: [
-      'Responsiivinen koodi (toimii mobiilissa ja tietokoneella)',
-      'Yhteydenottolomake ja muut toiminnallisuudet',
+      'Responsiivinen verkkosivu (toimii mobiilissa, tabletilla ja tietokoneella)',
+      'Yhteydenottolomake ja tarvittavat toiminnallisuudet',
+      'Sivuston tekninen optimointi',
     ],
   },
   {
-    heading: 'Sisältö',
+    heading: 'Sisältö ja hakukonenäkyvyys',
     items: [
       'Tekstien ja kuvien lisääminen sivuille',
-      'SEO-optimointi hakukonenäkyvyyttä varten',
+      'SEO-optimointi hakukonenäkyvyyden parantamiseksi',
+      'Metatietojen optimointi (otsikot ja meta-kuvaukset) hakutuloksia varten',
     ],
   },
   {
     heading: 'Julkaisu',
     items: [
-      'Verkkotunnus ja hosting kuntoon',
+      'Verkkotunnuksen ja hostingin käyttöönotto',
       'Testaus eri selaimilla ja laitteilla',
-      'Julkaisu ja käyttöönotto',
+      'Verkkosivuston julkaisu ja käyttöönotto',
     ],
   },
 ]
@@ -266,6 +268,7 @@ function WebsitePackage() {
   const [open, setOpen] = useState(false)
   const [pages, setPages] = useState('1-5')
   const [maintenance, setMaintenance] = useState('vakio')
+  const [wantBrand, setWantBrand] = useState(false)
 
   const pagePrices = { '1-5': 800, '6-10': 1500, '10+': 2500 }
   const maintenancePrices = { vakio: 100, tasma: 249 }
@@ -280,15 +283,15 @@ function WebsitePackage() {
             {[
               { k: '1-5', label: '1–5 sivua', price: 800 },
               { k: '6-10', label: '6–10 sivua', price: 1500 },
-              { k: '10+', label: '+10 sivua', price: 2500 },
-            ].map(({ k, label, price }) => (
+              { k: '10+', label: '+10 sivua', price: 2500, prefix: 'alk. ' },
+            ].map(({ k, label, price, prefix }) => (
               <button
                 key={k}
                 className={`hp-pill${pages === k ? ' hp-pill--active' : ''}`}
                 onClick={() => setPages(k)}
               >
                 <span className="hp-pill__count">{label}</span>
-                <span className="hp-pill__price">{price}€</span>
+                <span className="hp-pill__price">{prefix || ''}{price}€</span>
               </button>
             ))}
           </div>
@@ -327,7 +330,7 @@ function WebsitePackage() {
                 {maintenance === 'vakio' ? '✓' : ''}
               </span>
               <span className="hp-toggle__text">
-                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>VAKIO (Helppo ja vaivaton)</strong>
+                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>VAKIO (helppo ja vaivaton)</strong>
                 <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>sis. hosting, teknisen tuen, päivitykset ja ylläpidon</span>
               </span>
               <span className="hp-toggle__price">100€/kk</span>
@@ -341,11 +344,28 @@ function WebsitePackage() {
                 {maintenance === 'tasma' ? '✓' : ''}
               </span>
               <span className="hp-toggle__text">
-                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>TÄSMÄ (Analyyttinen kasvu)</strong>
+                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>TÄSMÄ (analyyttinen kasvu)</strong>
                 <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>sis. VAKIO ominaisuudet + dataan perustuva kuukausikohtainen optimointi</span>
                 <span style={{ display: 'block', fontWeight: 300, fontSize: '0.78rem', opacity: 0.75, marginTop: '0.1rem' }}>(Google Analytics + Microsoft Clarity)</span>
               </span>
               <span className="hp-toggle__price">249€/kk</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="hp-config-group">
+          <label className="hp-label">Brändi</label>
+          <div className="hp-toggles">
+            <button
+              className={`hp-toggle${wantBrand ? ' hp-toggle--active' : ''}`}
+              onClick={() => setWantBrand(v => !v)}
+            >
+              <span className="hp-toggle__check" style={wantBrand ? { background: '#00ff88', borderColor: '#00ff88', color: '#000000' } : {}}>{wantBrand ? '✓' : '+'}</span>
+              <span className="hp-toggle__text">
+                <strong style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>BRÄNDISUUNNITTELU</strong>
+                <span style={{ fontWeight: 300, fontSize: '0.78rem', opacity: 0.75 }}>sis. logo, värimaailma, typografia, visuaalinen tyyli sekä brändiä tukevat tekoälyllä tuotetut kuvat ja videot</span>
+              </span>
+              <span className="hp-toggle__price">499€</span>
             </button>
           </div>
         </div>
@@ -359,8 +379,14 @@ function WebsitePackage() {
           </div>
           <div className="hp-summary__row">
             <span>Verkkosivut ({pages} sivua)</span>
-            <span className="hp-summary__row-price">{pagePrices[pages]}€</span>
+            <span className="hp-summary__row-price">{pages === '10+' ? 'alk. ' : ''}{pagePrices[pages]}€</span>
           </div>
+          {wantBrand && (
+            <div className="hp-summary__row">
+              <span>Brändisuunnittelu</span>
+              <span className="hp-summary__row-price">499€</span>
+            </div>
+          )}
           <div className="hp-summary__row hp-summary__row--section-label" style={{marginTop:'0.5rem'}}>
             <span>Kuukausimaksu</span>
           </div>
@@ -373,7 +399,7 @@ function WebsitePackage() {
           <span>Yhteensä</span>
           <div className="hp-summary__price-wrap">
             <span className="hp-summary__price hp-summary__price--plain">
-              {pagePrices[pages]}€
+              {pages === '10+' ? 'alk. ' : ''}{pagePrices[pages] + (wantBrand ? 499 : 0)}€
               <span style={{ fontSize: '0.55em', fontStyle: 'normal', fontWeight: 400, marginLeft: '0.2em', opacity: 0.7 }}>+ {maintenancePrices[maintenance]}€/kk</span>
             </span>
           </div>
@@ -402,6 +428,12 @@ const TABS = [
   { id: 'web', label: 'Verkkosivut', component: WebsitePackage },
   { id: 'ai', label: 'AI agentti', component: AIPackage, coming: true },
 ]
+
+const TAB_DESCRIPTIONS = {
+  video: 'Lyhytvideot lisäävät tunnettuutta, sitouttavat yleisöä ja ohjaavat potentiaalisia asiakkaita palveluidesi pariin.',
+  web: 'Verkkosivut luovat vahvan ensivaikutelman ja muuttavat kävijät yhteydenotoiksi sekä liideiksi.',
+  ai: '',
+}
 
 /* ── MAIN EXPORT ─────────────────────────────────────────── */
 export default function Hinnoittelu() {
@@ -436,6 +468,10 @@ export default function Hinnoittelu() {
               </button>
             ))}
           </div>
+
+          {TAB_DESCRIPTIONS[activeTab] && (
+            <p className="hp-tab-description">{TAB_DESCRIPTIONS[activeTab]}</p>
+          )}
 
           {ActiveComponent && <ActiveComponent />}
         </div>
