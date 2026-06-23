@@ -116,7 +116,13 @@ function StackedCards() {
             className="vi-scene"
             style={{ width: stackWidth + 'px', height: '360px' }}
           >
-            {pageCards.map((card, i) => {
+            <div className="vi-stack-arrow-wrap">
+            <ArrowButton
+              dir={page < TOTAL_PAGES - 1 ? 'forward' : 'back'}
+              onClick={() => page < TOTAL_PAGES - 1 ? goTo(1) : goTo(-1)}
+            />
+          </div>
+          {pageCards.map((card, i) => {
               const isActive = activeCard === card.id
               const isDim    = activeCard !== null && !isActive
               const isEmpty  = !card.img
@@ -156,13 +162,7 @@ function StackedCards() {
           </div>
         </div>
 
-        {/* Floating glass arrow on the right edge of the stack */}
-        <div className="vi-stack-arrow-wrap">
-          <ArrowButton
-            dir={page < TOTAL_PAGES - 1 ? 'forward' : 'back'}
-            onClick={() => page < TOTAL_PAGES - 1 ? goTo(1) : goTo(-1)}
-          />
-        </div>
+
       </div>
 
 
