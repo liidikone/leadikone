@@ -63,7 +63,7 @@ export default function Hero() {
 
   // Järjestys: autodel, autokeskus, flyers, ilona tampere, renkaatalle,
   // suomen terassilasitus, renkaatalle, gold store, synabs, xpower, synabs, verkkopantteri
-  const logos = 
+  const logos = [
     '/referenssit/gold_store_finland_500px.avif',
     '/referenssit/autodel_500px.avif',
     '/referenssit/autokeskus_haapala_500px.avif',
