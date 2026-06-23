@@ -556,6 +556,13 @@
   gap: 0.5rem;
 }
 
+.hp-summary__price--plain {
+  font-family: inherit !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+
 .hp-summary__price-original {
   font-size: 1rem;
   font-weight: 400;
