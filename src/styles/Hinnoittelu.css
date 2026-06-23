@@ -547,7 +547,7 @@
 .hp-summary__price {
   font-family: 'Falzon', 'Oxanium', sans-serif;
   font-style: italic;
-  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  font-size: clamp(2rem, 3vw, 2.8rem);
   font-weight: 700;
   color: #000000;
   letter-spacing: 0.02em;
@@ -654,11 +654,7 @@
    VIHREÄ AKSENTTI — hero.css #00ff88 sama väri
    ============================================================ */
 
-/* "liidikoneesi" otsikossa */
-.hinnoittelu__title-accent {
-  color: #00ff88;
-  opacity: 1;
-}
+/* "liidikoneesi" otsikossa — harmaa (opacity 0.35 määritelty ylhäällä) */
 
 /* -5% ja -10% badget sopimuspilleissä */
 .hp-pill__badge--green {
