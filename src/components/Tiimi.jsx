@@ -124,7 +124,10 @@ export default function Tiimi() {
       <div className="tiimi-page__inner">
 
         <div className="tiimi-page__header">
-          <h2 className="tiimi-page__title">Osaajat kasvun takana</h2>
+          <h2 className="tiimi-page__title">
+            KOKO<span className="tiimi-page__title-on">ON</span>PANO
+            <span className="tiimi-page__title-accent">kasvun takana</span>
+          </h2>
         </div>
 
         <div className="tiimi-page__mission">
@@ -134,12 +137,7 @@ export default function Tiimi() {
           </p>
         </div>
 
-        <div className="tiimi-page__cards-section">
-          <h3 className="tiimi-page__cards-title">SISÄLLÖNTUOTTAJAT</h3>
-          <StackedCards />
-        </div>
 
-        <hr className="tiimi-page__hr" />
 
         <div className="tiimi-page__grid tiimi-page__grid--sellers">
           {teamMembers.slice(2, 4).map(m => <Member key={m.id} {...m} />)}
