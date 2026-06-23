@@ -47,18 +47,19 @@ function VideoPackage() {
 
   const base = basePrices[videos]
   const discountRate = discounts[months]
-  const monthly = base * (1 - discountRate)
-  // platforms: 50€ kertamaksu + 50€/kk per alusta
+  // monthly prices (per month, after discount)
+  const videoMonthly = base * (1 - discountRate)
   const platformOneTime = platforms.length * 50
   const platformMonthly = platforms.length * 50
   const influencerMonthly = wantInfluencer ? 200 : 0
   const managementMonthly = wantManagement ? 100 : 0
 
-  const totalPerMonth = monthly + managementMonthly + influencerMonthly + platformMonthly
-  const grandTotal = totalPerMonth * months + platformOneTime
+  // total per month (discounted)
+  const totalPerMonth = videoMonthly + managementMonthly + influencerMonthly + platformMonthly
+  // total per month WITHOUT discount (for discount calculation)
+  const totalPerMonthBase = base + managementMonthly + influencerMonthly + platformMonthly
+  const discountPerMonth = totalPerMonthBase - totalPerMonth
 
-  // For discount display
-  const baseTotal = (base + managementMonthly + influencerMonthly + platformMonthly) * months + platformOneTime
   const hasDiscount = discountRate > 0
 
   return (
@@ -75,7 +76,7 @@ function VideoPackage() {
                 onClick={() => setVideos(v)}
               >
                 <span className="hp-pill__count">{v} kpl</span>
-                <span className="hp-pill__price">{basePrices[v]}€</span>
+                <span className="hp-pill__price">{basePrices[v]}€/kk</span>
               </button>
             ))}
           </div>
@@ -95,7 +96,9 @@ function VideoPackage() {
                 onClick={() => setMonths(m)}
               >
                 <span className="hp-pill__count">{label}</span>
-                {badge && <span className="hp-pill__badge">{badge}</span>}
+                {badge && (
+                  <span className="hp-pill__badge hp-pill__badge--green">{badge}</span>
+                )}
               </button>
             ))}
           </div>
@@ -146,68 +149,81 @@ function VideoPackage() {
 
       <div className="hp-summary">
         <div className="hp-summary__rows">
+          {/* Video row — always shows /kk price */}
           <div className="hp-summary__row">
-            <span>{videos} videota/kk × {months} kk</span>
+            <span>{videos} videota/kk</span>
             <span className="hp-summary__row-price">
               {hasDiscount && (
-                <span className="hp-summary__strikethrough">{(base * months).toFixed(0)}€</span>
+                <span className="hp-summary__strikethrough">{base}€</span>
               )}
-              {(monthly * months).toFixed(0)}€
+              {videoMonthly.toFixed(0)}€/kk
             </span>
           </div>
+
+          {/* Platform one-time setup */}
           {platforms.length > 0 && (
-            <>
-              <div className="hp-summary__row">
-                <span>Alustat avaus ({platforms.length} kpl)</span>
-                <span className="hp-summary__row-price">{platformOneTime}€</span>
-              </div>
-              <div className="hp-summary__row">
-                <span>Alustat/kk × {months} kk</span>
-                <span className="hp-summary__row-price">
-                  {hasDiscount && (
-                    <span className="hp-summary__strikethrough">{platforms.length * 50 * months}€</span>
-                  )}
-                  {(platformMonthly * months)}€
-                </span>
-              </div>
-            </>
+            <div className="hp-summary__row">
+              <span>Alustat avaus ({platforms.length} kpl)</span>
+              <span className="hp-summary__row-price">{platformOneTime}€</span>
+            </div>
           )}
+
+          {/* Platform monthly */}
+          {platforms.length > 0 && (
+            <div className="hp-summary__row">
+              <span>Alustat/kk</span>
+              <span className="hp-summary__row-price">
+                {platformMonthly}€/kk
+              </span>
+            </div>
+          )}
+
+          {/* Influencer monthly */}
           {wantInfluencer && (
             <div className="hp-summary__row">
-              <span>Vaikuttaja × {months} kk</span>
+              <span>Vaikuttaja</span>
               <span className="hp-summary__row-price">
-                {hasDiscount && (
-                  <span className="hp-summary__strikethrough">{200 * months}€</span>
-                )}
-                {influencerMonthly * months}€
+                {influencerMonthly}€/kk
               </span>
             </div>
           )}
+
+          {/* Management monthly */}
           {wantManagement && (
             <div className="hp-summary__row">
-              <span>Tilien ylläpito × {months} kk</span>
+              <span>Tilien ylläpito</span>
               <span className="hp-summary__row-price">
-                {hasDiscount && (
-                  <span className="hp-summary__strikethrough">{100 * months}€</span>
-                )}
-                {managementMonthly * months}€
+                {managementMonthly}€/kk
               </span>
             </div>
           )}
+
+          {/* Discount row */}
           {hasDiscount && (
             <div className="hp-summary__row hp-summary__row--discount">
-              <span>Sopimusalennus ({Math.round(discountRate * 100)}%)</span>
-              <span className="hp-summary__row-price">−{(baseTotal - grandTotal).toFixed(0)}€</span>
+              <span style={{ color: '#00ff88', fontWeight: 600 }}>
+                Sopimusalennus ({Math.round(discountRate * 100)}%)
+              </span>
+              <span className="hp-summary__row-price" style={{ color: '#00ff88', fontWeight: 600 }}>
+                −{discountPerMonth.toFixed(0)}€/kk
+              </span>
             </div>
           )}
         </div>
+
+        {/* Total — always /kk, green when discounted */}
         <div className="hp-summary__total">
           <span>Yhteensä</span>
           <div className="hp-summary__price-wrap">
             {hasDiscount && (
-              <span className="hp-summary__price-original">{baseTotal.toFixed(0)}€</span>
+              <span className="hp-summary__price-original">{totalPerMonthBase.toFixed(0)}€</span>
             )}
-            <span className="hp-summary__price">{grandTotal.toFixed(0)}€</span>
+            <span
+              className="hp-summary__price"
+              style={hasDiscount ? { color: '#00ff88' } : {}}
+            >
+              {totalPerMonth.toFixed(0)}€<span style={{ fontSize: '0.55em', fontStyle: 'normal', fontWeight: 400, marginLeft: '0.2em', opacity: 0.7 }}>/kk</span>
+            </span>
           </div>
         </div>
       </div>
