@@ -54,16 +54,62 @@
   gap: 1.75rem;
 }
 
+/* ── SCENE OUTER (positions the floating arrow) ────────────── */
+.vi-scene-outer {
+  position: relative;
+  display: inline-block;
+}
+
 /* ── SCENE WRAP ────────────────────────────────────────────── */
 .vi-scene-wrap {
   overflow: visible;
-  padding-bottom: 2rem;   /* room for card shadow + zoom lift */
+  padding-bottom: 2rem;
   padding-top: 1.5rem;
 }
 
 /* ── SCENE ─────────────────────────────────────────────────── */
 .vi-scene {
   position: relative;
+}
+
+/* ── FLOATING STACK ARROW ──────────────────────────────────── */
+.vi-stack-arrow-wrap {
+  position: absolute;
+  right: -22px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+}
+
+.vi-stack-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px) saturate(1.8);
+  -webkit-backdrop-filter: blur(14px) saturate(1.8);
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    transform 0.15s ease;
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.vi-stack-arrow:hover {
+  background: rgba(255, 255, 255, 0.82);
+  transform: scale(1.1);
+}
+
+.vi-stack-arrow:active {
+  transform: scale(0.94);
 }
 
 /* ── CARD BASE ─────────────────────────────────────────────── */
@@ -96,7 +142,6 @@
   box-shadow:
     8px 20px 40px rgba(0, 0, 0, 0.22),
     14px 28px 56px rgba(0, 0, 0, 0.13),
-    0 0 0 2px #111111,
     1px 1px 0 rgba(255,255,255,0.6) inset;
   filter: brightness(1.04) grayscale(0%) !important;
 }
