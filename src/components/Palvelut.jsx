@@ -25,7 +25,10 @@ export default function Palvelut() {
       <div className="palvelut-page__inner">
 
         <div className="palvelut-page__header">
-          <h2 className="palvelut-page__title">Kun asiakkaat etsivät, sinä olet <span className="palvelut-page__title-accent">näkyvillä</span></h2>
+          <h2 className="palvelut-page__title">
+            HUOMI<span className="palvelut-page__title-on">ON</span>
+            <span className="palvelut-page__title-accent">kohde</span>
+          </h2>
         </div>
 
         <div className="palvelut-page__mission">
