@@ -46,12 +46,20 @@ function VideoPackage() {
     setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p])
 
   const base = basePrices[videos]
-  const monthly = base * (1 - discounts[months])
-  const platformTotal = platforms.length * 100
+  const discountRate = discounts[months]
+  const monthly = base * (1 - discountRate)
+  // platforms: 50€ kertamaksu + 50€/kk per alusta
+  const platformOneTime = platforms.length * 50
+  const platformMonthly = platforms.length * 50
   const influencerMonthly = wantInfluencer ? 200 : 0
   const managementMonthly = wantManagement ? 100 : 0
-  const totalPerMonth = monthly + managementMonthly + influencerMonthly
-  const grandTotal = totalPerMonth * months + platformTotal
+
+  const totalPerMonth = monthly + managementMonthly + influencerMonthly + platformMonthly
+  const grandTotal = totalPerMonth * months + platformOneTime
+
+  // For discount display
+  const baseTotal = (base + managementMonthly + influencerMonthly + platformMonthly) * months + platformOneTime
+  const hasDiscount = discountRate > 0
 
   return (
     <div className="hp-package">
@@ -94,7 +102,10 @@ function VideoPackage() {
         </div>
 
         <div className="hp-config-group">
-          <label className="hp-label">Alustat <span className="hp-label-note">100€/kpl (kertamaksu)</span></label>
+          <label className="hp-label">
+            Alustat
+            <span className="hp-label-note"> 50€ avaus + 50€/kk per alusta</span>
+          </label>
           <div className="hp-some-icons">
             {platformList.map(p => (
               <button
@@ -143,10 +154,16 @@ function VideoPackage() {
             <span>{(monthly * months).toFixed(0)}€</span>
           </div>
           {platforms.length > 0 && (
-            <div className="hp-summary__row">
-              <span>Alustat ({platforms.join(', ')})</span>
-              <span>{platformTotal}€</span>
-            </div>
+            <>
+              <div className="hp-summary__row">
+                <span>Alustat avaus ({platforms.length} kpl)</span>
+                <span>{platformOneTime}€</span>
+              </div>
+              <div className="hp-summary__row">
+                <span>Alustat/kk x {months} kk</span>
+                <span>{platformMonthly * months}€</span>
+              </div>
+            </>
           )}
           {wantInfluencer && (
             <div className="hp-summary__row">
@@ -160,10 +177,21 @@ function VideoPackage() {
               <span>{managementMonthly * months}€</span>
             </div>
           )}
+          {hasDiscount && (
+            <div className="hp-summary__row hp-summary__row--discount">
+              <span>Sopimusalennus ({Math.round(discountRate * 100)}%)</span>
+              <span>-{(baseTotal - grandTotal).toFixed(0)}€</span>
+            </div>
+          )}
         </div>
         <div className="hp-summary__total">
           <span>Yhteensä</span>
-          <span className="hp-summary__price">{grandTotal.toFixed(0)}€</span>
+          <div className="hp-summary__price-wrap">
+            {hasDiscount && (
+              <span className="hp-summary__price-original">{baseTotal.toFixed(0)}€</span>
+            )}
+            <span className="hp-summary__price">{grandTotal.toFixed(0)}€</span>
+          </div>
         </div>
       </div>
     </div>
@@ -307,7 +335,9 @@ function WebsitePackage() {
         </div>
         <div className="hp-summary__total">
           <span>Aloitushinta sis. ylläpito</span>
-          <span className="hp-summary__price">{total}€</span>
+          <div className="hp-summary__price-wrap">
+            <span className="hp-summary__price">{total}€</span>
+          </div>
         </div>
       </div>
     </div>
@@ -331,12 +361,7 @@ function AIPackage() {
 const TABS = [
   { id: 'video', label: 'Lyhytvideot', component: VideoPackage },
   { id: 'web', label: 'Verkkosivut', component: WebsitePackage },
-  {
-    id: 'ai',
-    label: 'AI agentti',
-    component: AIPackage,
-    coming: true,
-  },
+  { id: 'ai', label: 'AI agentti', component: AIPackage, coming: true },
 ]
 
 /* ── MAIN EXPORT ─────────────────────────────────────────── */
@@ -352,11 +377,11 @@ export default function Hinnoittelu() {
         <div className="hinnoittelu__header">
           <span className="hinnoittelu__eyebrow">Palvelupaketit</span>
           <h2 className="hinnoittelu__title">
-            Valitse oma<br />
-            <span className="hinnoittelu__title-accent">kasvupakettisi</span>
+            Rakenna{' '}
+            <span className="hinnoittelu__title-accent">liidikoneesi</span>
           </h2>
           <p className="hinnoittelu__lead">
-            Selkeät kokonaisuudet — räätälöi tarpeesi mukaan ja näe hinta heti.
+            Selkeät kokonaisuudet ilman piilokuluja asiakaskunnan kasvattamiseen.
           </p>
         </div>
 
