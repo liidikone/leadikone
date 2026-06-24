@@ -446,7 +446,7 @@ export default function Hinnoittelu() {
 
         <div className="hinnoittelu__header">
           <h2 className="hinnoittelu__title">
-            LIIDIK<span className="hinnoittelu__title-on">ON</span>EESI
+            LIIDIK<span className="hinnoittelu__title-on">ON</span>E
           </h2>
 
         </div>
