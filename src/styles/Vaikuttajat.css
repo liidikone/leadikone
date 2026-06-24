@@ -166,14 +166,14 @@
   width: 220px;
   height: 340px;
   border-radius: 14px;
-  /* overflow:visible so scale/lift don't clip; bg clips via .vi-card__bg */
   overflow: visible;
   cursor: pointer;
   background: #ffffff;
 
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.10),
-    0 1px 0 rgba(0, 0, 0, 0.05);
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 6px 16px rgba(0, 0, 0, 0.12),
+    0 16px 40px rgba(0, 0, 0, 0.10);
 
   filter: grayscale(100%);
 
@@ -185,13 +185,23 @@
   will-change: transform;
 }
 
-/* ── CARD BG (clips to border-radius) ───────────────────────── */
+/* ── CARD CLIP — hard boundary for bg + overlay ─────────────── */
+/* The card itself is overflow:visible so transform/scale never clips.
+   This inner div clips everything visual to the rounded rect. */
 
-.vi-card__bg {
+.vi-card__clip {
   position: absolute;
   inset: 0;
   border-radius: 14px;
   overflow: hidden;
+  z-index: 0;
+}
+
+/* ── CARD BG ─────────────────────────────────────────────────── */
+
+.vi-card__bg {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center top;
   background-color: #e8e8e8;
@@ -199,7 +209,7 @@
 }
 
 .vi-card--active .vi-card__bg {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
 /* ── CARD OVERLAY ────────────────────────────────────────────── */
@@ -207,13 +217,12 @@
 .vi-card__overlay {
   position: absolute;
   inset: 0;
-  border-radius: 14px;
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.02) 0%,
     rgba(0, 0, 0, 0.00) 20%,
-    rgba(0, 0, 0, 0.38) 68%,
-    rgba(0, 0, 0, 0.68) 100%
+    rgba(0, 0, 0, 0.42) 65%,
+    rgba(0, 0, 0, 0.72) 100%
   );
   z-index: 1;
 }
@@ -223,33 +232,44 @@
 .vi-card__body {
   position: absolute;
   z-index: 2;
-  left: 1rem;
-  right: 1rem;
-  top: calc(340px * 0.34);
+  left: 0;
+  right: 0;
+  bottom: 2.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 0.75rem;
 }
 
 .vi-card__label {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
   font-style: italic;
-  letter-spacing: 0;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
   line-height: 1.05;
   color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 /* ── CARD ACCENT ─────────────────────────────────────────────── */
+/* Accent lives inside .vi-card (overflow:visible) but is absolutely
+   positioned at bottom:0. It must be clipped to card width — we use
+   inset:0 left/right to match the card, NOT clip-path, so it stays sharp. */
 
 .vi-card__accent {
   position: absolute;
   bottom: 0;
+  /* Match the card's own border-radius at the bottom corners */
   left: 0;
   right: 0;
   height: 3px;
   border-radius: 0 0 14px 14px;
   z-index: 3;
-  background: linear-gradient(to right, #00ff88, rgba(0, 255, 136, 0.15));
+  background: linear-gradient(to right, #00ff88 60%, rgba(0, 255, 136, 0.0) 100%);
+  /* clip to card width so it never bleeds sideways */
+  clip-path: inset(0 0 0 0 round 0 0 14px 14px);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -264,8 +284,9 @@
 .vi-card--active {
   transform: translateY(-14px) scale(1.06);
   box-shadow:
-    0 12px 28px rgba(0, 0, 0, 0.18),
-    0 1px 0 rgba(0, 0, 0, 0.06);
+    0 4px 8px rgba(0, 0, 0, 0.10),
+    0 16px 36px rgba(0, 0, 0, 0.20),
+    0 32px 64px rgba(0, 0, 0, 0.14);
   filter: brightness(1.04) grayscale(0%);
   z-index: 50 !important;
 }
@@ -332,7 +353,7 @@
   }
 
   .vi-card__body {
-    top: calc(280px * 0.34);
+    bottom: 2.2rem;
   }
 
   .vi-card__label {
