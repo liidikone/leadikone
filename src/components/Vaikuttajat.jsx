@@ -55,25 +55,23 @@ const influencers = [
   { id: 16, label: null, img: null },
 ]
 
-// Smaller base size so active scale/lift has room to grow into
-const CARD_W = 170
-const CARD_H = 265
-const CARD_GAP = 16
-
 function StackedCards() {
   const [activeCard, setActiveCard]     = useState(influencers[0].id)
   const [canScrollLeft, setCanScrollLeft]   = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
-  const scrollRef    = useRef(null)
-  const cardRefs     = useRef({})
-  const activeIndexRef = useRef(0) // tracks current index for arrow nav
+  const scrollRef      = useRef(null)
+  const cardRefs       = useRef({})
+  const activeIndexRef = useRef(0)
+  // FIX #2: prevent Observer from overriding initial state before user scrolls
+  const hasScrolledRef = useRef(false)
 
   /* Update left/right arrow visibility */
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
-    setCanScrollLeft(el.scrollLeft > 8)
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8)
+    // FIX #3: use same threshold value (4px) on both sides — no arbitrary 8px
+    setCanScrollLeft(el.scrollLeft > 4)
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4)
   }, [])
 
   /* IntersectionObserver — active card */
@@ -82,6 +80,9 @@ function StackedCards() {
     if (!container) return
     const observer = new IntersectionObserver(
       (entries) => {
+        // FIX #2: don't override initial card until user actually scrolls
+        if (!hasScrolledRef.current) return
+
         let best = null, bestRatio = 0
         entries.forEach((e) => {
           if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e }
@@ -99,13 +100,17 @@ function StackedCards() {
     return () => observer.disconnect()
   }, [])
 
-  /* Scroll listener for arrow state */
+  /* Scroll listener for arrow state + mark that user has scrolled */
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
-    el.addEventListener('scroll', updateScrollState, { passive: true })
+    const onScroll = () => {
+      hasScrolledRef.current = true
+      updateScrollState()
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
     updateScrollState()
-    return () => el.removeEventListener('scroll', updateScrollState)
+    return () => el.removeEventListener('scroll', onScroll)
   }, [updateScrollState])
 
   /* Mouse drag-to-scroll */
@@ -141,15 +146,19 @@ function StackedCards() {
     }
   }, [])
 
-  /* Arrow nav: scroll to specific card element — avoids scroll-snap bounce */
+  /* Arrow nav: scroll to specific card element */
   const scrollToIndex = useCallback((idx) => {
     const clampedIdx = Math.max(0, Math.min(influencers.length - 1, idx))
     const targetCard = cardRefs.current[influencers[clampedIdx].id]
     const track = scrollRef.current
     if (!targetCard || !track) return
+    hasScrolledRef.current = true
     const paddingLeft = parseFloat(getComputedStyle(track).paddingLeft) || 0
     track.scrollTo({ left: targetCard.offsetLeft - paddingLeft, behavior: 'smooth' })
     activeIndexRef.current = clampedIdx
+    // FIX #3: update active card immediately on arrow click, don't wait for Observer
+    const newId = influencers[clampedIdx].id
+    setActiveCard((prev) => { if (prev !== newId) { playCardSound(); return newId } return prev })
   }, [])
 
   const scrollRight = useCallback(() => scrollToIndex(activeIndexRef.current + 1), [scrollToIndex])
@@ -202,7 +211,13 @@ function StackedCards() {
                     (isEmpty  ? ' vi-card--empty'  : ' vi-card--filled')
                   }
                   onClick={() => {
-                    if (activeCard !== card.id) { setActiveCard(card.id); playCardSound() }
+                    if (activeCard !== card.id) {
+                      hasScrolledRef.current = true
+                      const idx = influencers.findIndex(c => c.id === card.id)
+                      if (idx !== -1) activeIndexRef.current = idx
+                      setActiveCard(card.id)
+                      playCardSound()
+                    }
                   }}
                 >
                   {isEmpty ? (
