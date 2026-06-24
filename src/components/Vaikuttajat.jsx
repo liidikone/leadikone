@@ -1,10 +1,17 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import '../styles/Vaikuttajat.css'
 
-/* AudioContext singleton */
+const CARD_W = 220
+const PEEK   = Math.round(CARD_W * 0.38)
+const CARDS_PER_PAGE = 8
+const TOTAL_CARDS = 16
+const TOTAL_PAGES = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE)
+
 let _audioCtx = null
 function getAudioCtx() {
-  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  if (!_audioCtx) {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  }
   if (_audioCtx.state === 'suspended') _audioCtx.resume()
   return _audioCtx
 }
@@ -17,7 +24,9 @@ function playCardSound() {
     const bufferSize = Math.floor(ctx.sampleRate * dur)
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
     const data = buffer.getChannelData(0)
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
+    }
     const noise = ctx.createBufferSource()
     noise.buffer = buffer
     const bp = ctx.createBiquadFilter()
@@ -55,146 +64,76 @@ const influencers = [
   { id: 16, label: null, img: null },
 ]
 
-const CARD_W = 170
-const CARD_GAP = 16
+function ArrowButton({ dir, onClick, disabled }) {
+  const isBack = dir === 'back'
+  return (
+    <button
+      className={'vi-stack-arrow' + (disabled ? ' vi-stack-arrow--disabled' : '')}
+      onClick={disabled ? undefined : onClick}
+      aria-label={isBack ? 'Edellinen' : 'Seuraava'}
+      tabIndex={disabled ? -1 : 0}
+    >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        {isBack
+          ? <path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          : <path d="M7 4L12 9L7 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        }
+      </svg>
+    </button>
+  )
+}
 
 function StackedCards() {
-  const [activeCard, setActiveCard]       = useState(influencers[0].id)
-  const [canScrollLeft, setCanScrollLeft]   = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
-  const scrollRef      = useRef(null)
-  const cardRefs       = useRef({})
-  const activeIndexRef = useRef(0)
+  const [activeCard, setActiveCard] = useState(influencers[0].id)
+  const [page, setPage] = useState(0)
 
-  /* ── Scroll state ── */
-  const updateScrollState = useCallback(() => {
-    const el = scrollRef.current
-    if (!el) return
-    setCanScrollLeft(el.scrollLeft > 8)
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8)
-  }, [])
+  const pageCards  = influencers.slice(page * CARDS_PER_PAGE, (page + 1) * CARDS_PER_PAGE)
+  const stackWidth = CARD_W + (pageCards.length - 1) * PEEK
 
-  /* ── Scroll to card index — reliable offset calc ── */
-  const scrollToIndex = useCallback((idx) => {
-    const clamped = Math.max(0, Math.min(influencers.length - 1, idx))
-    const track   = scrollRef.current
-    const card    = cardRefs.current[influencers[clamped].id]
-    if (!track || !card) return
-
-    const trackRect = track.getBoundingClientRect()
-    const cardRect  = card.getBoundingClientRect()
-
-    // How far card's left edge is from track's left edge (accounting for current scroll)
-    const delta = cardRect.left - trackRect.left
-    // Center the card in the track
-    const center = (trackRect.width - cardRect.width) / 2
-    const target = track.scrollLeft + delta - center
-
-    track.scrollTo({ left: target, behavior: 'smooth' })
-    activeIndexRef.current = clamped
-  }, [])
-
-  const scrollRight = useCallback(() => scrollToIndex(activeIndexRef.current + 1), [scrollToIndex])
-  const scrollLeft  = useCallback(() => scrollToIndex(activeIndexRef.current - 1), [scrollToIndex])
-
-  /* ── IntersectionObserver — keep activeIndexRef in sync ── */
-  useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let best = null, bestRatio = 0
-        entries.forEach((e) => {
-          if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e }
-        })
-        if (best && bestRatio > 0.5) {
-          const id  = Number(best.target.dataset.cardId)
-          const idx = influencers.findIndex(c => c.id === id)
-          if (idx !== -1) activeIndexRef.current = idx
-          setActiveCard((prev) => {
-            if (prev !== id) { playCardSound(); return id }
-            return prev
-          })
-        }
-      },
-      { root: container, threshold: [0.5, 0.8], rootMargin: '0px -30% 0px -30%' }
-    )
-    Object.values(cardRefs.current).forEach((el) => { if (el) observer.observe(el) })
-    return () => observer.disconnect()
-  }, [])
-
-  /* ── Scroll listener ── */
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    el.addEventListener('scroll', updateScrollState, { passive: true })
-    updateScrollState()
-    return () => el.removeEventListener('scroll', updateScrollState)
-  }, [updateScrollState])
-
-  /* ── Mouse drag-to-scroll ── */
-  useEffect(() => {
-    const track = scrollRef.current
-    if (!track) return
-    let isDown = false, startX = 0, scrollLeft = 0, moved = false
-
-    const onMouseDown = (e) => {
-      isDown = true; moved = false
-      startX = e.pageX - track.offsetLeft
-      scrollLeft = track.scrollLeft
-      track.style.cursor = 'grabbing'
+  function handleEnter(id) {
+    if (id !== activeCard) {
+      setActiveCard(id)
+      playCardSound()
     }
-    const onMouseMove = (e) => {
-      if (!isDown) return
-      const walk = (e.pageX - track.offsetLeft - startX) * 1.2
-      if (Math.abs(walk) > 4) moved = true
-      track.scrollLeft = scrollLeft - walk
-    }
-    const onMouseUp = () => { isDown = false; track.style.cursor = 'grab' }
-    const onClickCapture = (e) => { if (moved) { e.stopPropagation(); moved = false } }
+  }
 
-    track.addEventListener('mousedown', onMouseDown)
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-    track.addEventListener('click', onClickCapture, true)
-    return () => {
-      track.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-      track.removeEventListener('click', onClickCapture, true)
-    }
+  function goTo(dir) {
+    const next = page + dir
+    if (next < 0 || next >= TOTAL_PAGES) return
+    const nextFirstId = influencers[next * CARDS_PER_PAGE]?.id ?? null
+    setActiveCard(nextFirstId)
+    setPage(next)
+  }
+
+  const onFirstInteraction = useCallback(() => {
+    getAudioCtx()
   }, [])
 
   return (
-    <div className="vi-wrapper" onPointerDown={() => getAudioCtx()}>
-      <div className="vi-browse-hint" aria-hidden="true">
-        <span className="vi-browse-hint__text">Selaa</span>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </div>
-
-      <div className="vi-scroll-area">
-
-        {/* LEFT ARROW */}
-        <button
-          className={'vi-arrow-btn vi-arrow-btn--left' + (canScrollLeft ? ' vi-arrow-btn--visible' : '')}
-          onClick={scrollLeft}
-          aria-label="Selaa vasemmalle"
-          tabIndex={canScrollLeft ? 0 : -1}
+    <div className="vi-wrapper" onPointerDown={onFirstInteraction}>
+      <div className="vi-scene-outer">
+        <div
+          className="vi-scene-wrap"
+          onMouseLeave={() => {
+            const firstOnPage = pageCards[0]?.id ?? null
+            setActiveCard(firstOnPage)
+          }}
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M14 10H6M9 14l-4-4 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          <div
+            className="vi-scene"
+            style={{ width: stackWidth + 'px', height: '360px' }}
+          >
+            {/* BACK arrow — left side of stack */}
+            <div className="vi-stack-arrow-wrap vi-stack-arrow-wrap--back">
+              <ArrowButton dir="back" onClick={() => goTo(-1)} disabled={page === 0} />
+            </div>
 
-        {/* LEFT FADE */}
-        <div className={'vi-fade vi-fade--left' + (canScrollLeft ? ' vi-fade--visible' : '')} aria-hidden="true" />
+            {/* FORWARD arrow — right side of stack */}
+            <div className="vi-stack-arrow-wrap vi-stack-arrow-wrap--forward">
+              <ArrowButton dir="forward" onClick={() => goTo(1)} disabled={page >= TOTAL_PAGES - 1} />
+            </div>
 
-        {/* SCROLL TRACK */}
-        <div className="vi-scroll-track" ref={scrollRef}>
-          <div className="vi-scroll-rail">
-            {influencers.map((card) => {
+            {pageCards.map((card, i) => {
               const isActive = activeCard === card.id
               const isDim    = activeCard !== null && !isActive
               const isEmpty  = !card.img
@@ -202,17 +141,17 @@ function StackedCards() {
               return (
                 <div
                   key={card.id}
-                  data-card-id={card.id}
-                  ref={(el) => { cardRefs.current[card.id] = el }}
                   className={
                     'vi-card' +
                     (isActive ? ' vi-card--active' : '') +
                     (isDim    ? ' vi-card--dim'    : '') +
                     (isEmpty  ? ' vi-card--empty'  : ' vi-card--filled')
                   }
-                  onClick={() => {
-                    if (activeCard !== card.id) { setActiveCard(card.id); playCardSound() }
+                  style={{
+                    left: i * PEEK + 'px',
+                    zIndex: isActive ? 50 : pageCards.length - i,
                   }}
+                  onMouseEnter={() => handleEnter(card.id)}
                 >
                   {isEmpty ? (
                     <div className="vi-card__inset">
@@ -220,10 +159,8 @@ function StackedCards() {
                     </div>
                   ) : (
                     <>
-                      <div className="vi-card__clip">
-                        <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
-                        <div className="vi-card__overlay" />
-                      </div>
+                      <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
+                      <div className="vi-card__overlay" />
                       <div className="vi-card__body">
                         <span className="vi-card__label">{card.label}</span>
                       </div>
@@ -235,22 +172,6 @@ function StackedCards() {
             })}
           </div>
         </div>
-
-        {/* RIGHT FADE */}
-        <div className={'vi-fade vi-fade--right' + (canScrollRight ? ' vi-fade--visible' : '')} aria-hidden="true" />
-
-        {/* RIGHT ARROW */}
-        <button
-          className={'vi-arrow-btn vi-arrow-btn--right' + (canScrollRight ? ' vi-arrow-btn--visible' : '')}
-          onClick={scrollRight}
-          aria-label="Selaa oikealle"
-          tabIndex={canScrollRight ? 0 : -1}
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M6 10h8M11 6l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-
       </div>
     </div>
   )
