@@ -64,7 +64,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* CRITICAL: visible so active card lift + shadows aren't clipped */
   overflow: visible;
 }
 
@@ -84,16 +83,14 @@
   text-transform: uppercase;
 }
 
-/* ── SCROLL AREA (track + arrow button) ────────────────────── */
+/* ── SCROLL AREA ───────────────────────────────────────────── */
 .vi-scroll-area {
   position: relative;
   display: flex;
   align-items: center;
-  /* Space above so active card's translateY(-12px) + shadow isn't clipped */
-  padding-top: 24px;
-  /* Space below for shadow */
-  padding-bottom: 8px;
-  /* CRITICAL: overflow visible so shadows bleed out */
+  /* Generous padding so active card lift + shadow doesn't clip */
+  padding-top: 28px;
+  padding-bottom: 16px;
   overflow: visible;
 }
 
@@ -103,21 +100,16 @@
   flex-direction: row;
   gap: 1rem;
   overflow-x: auto;
-  /* CRITICAL: visible so translateY lifts are not clipped */
   overflow-y: visible;
-  scroll-snap-type: x mandatory;
+  /* NO scroll-snap — causes bounce-back when using arrow buttons */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-top: 0;
   padding-bottom: 2rem;
   padding-left: clamp(1.5rem, 4vw, 5rem);
-  /* Right padding: enough to show there are more cards, but no half-card */
   padding-right: clamp(3rem, 6vw, 5rem);
-  scroll-padding-left: clamp(1.5rem, 4vw, 5rem);
   cursor: grab;
   flex: 1;
-  /* Clip only horizontally to keep scroll working */
-  clip-path: none;
 }
 
 .vi-scroll-track:active {
@@ -128,7 +120,7 @@
   display: none;
 }
 
-/* ── SCROLL RAIL (flex sisäkontti, pitää kortit rivissä) ──────── */
+/* ── SCROLL RAIL ───────────────────────────────────────────── */
 .vi-scroll-rail {
   display: flex;
   flex-direction: row;
@@ -136,24 +128,24 @@
 }
 
 /* ── CARD BASE ─────────────────────────────────────────────── */
-/* HUOM: varjo tehdään filter:drop-shadow():lla (ei box-shadow),
-   koska drop-shadow ei leikkaannu overflow:hidden:n takia.
-   Näin border-radius+overflow:hidden (kuvan pyöristys) ja
-   varjo voivat elää samalla elementillä rikkomatta toisiaan. */
+/* Smaller base (170×265) so active state (scale + translateY)
+   grows into roughly the old 200×310 visual size.
+   Shadows use drop-shadow (not box-shadow) so they're not
+   clipped by overflow:hidden on the card — but kept subtle
+   so they don't hit neighbouring edges. */
 .vi-card {
   position: relative;
   flex-shrink: 0;
-  width: 220px;
-  height: 340px;
+  width: 170px;
+  height: 265px;
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
   background: #ffffff;
-  scroll-snap-align: start;
 
   filter:
-    drop-shadow(3px 6px 10px rgba(0, 0, 0, 0.14))
-    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.06))
+    drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.10))
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.05))
     grayscale(100%);
 
   transition:
@@ -164,10 +156,10 @@
 
 /* ── ACTIVE ────────────────────────────────────────────────── */
 .vi-card--active {
-  transform: translateY(-12px) scale(1.025);
+  transform: translateY(-12px) scale(1.08);
   filter:
-    drop-shadow(5px 14px 20px rgba(0, 0, 0, 0.18))
-    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.08))
+    drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.14))
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.06))
     brightness(1.04)
     grayscale(0%);
 }
@@ -175,8 +167,8 @@
 /* ── DIM ───────────────────────────────────────────────────── */
 .vi-card--dim {
   filter:
-    drop-shadow(3px 6px 10px rgba(0, 0, 0, 0.10))
-    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.06))
+    drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.07))
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.04))
     brightness(0.72) saturate(0.25)
     grayscale(100%);
 }
@@ -212,11 +204,11 @@
   z-index: 2;
   left: 1rem;
   right: 1rem;
-  top: calc(340px * 0.34);
+  top: calc(265px * 0.34);
 }
 
 .vi-card__label {
-  font-size: 2.4rem;
+  font-size: 2rem;
   font-weight: 700;
   font-style: italic;
   letter-spacing: 0;
@@ -268,7 +260,6 @@
 
 /* ── ARROW BUTTON ──────────────────────────────────────────── */
 .vi-arrow-btn {
-  /* hidden by default (mobile) */
   display: none;
   position: absolute;
   top: 50%;
@@ -322,7 +313,7 @@
     0 0 0 1px rgba(0,0,0,0.07);
 }
 
-/* ── FADES (vasen/oikea) ──────────────────────────────────── */
+/* ── FADES ─────────────────────────────────────────────────── */
 .vi-fade {
   position: absolute;
   top: 0;
@@ -370,19 +361,19 @@
   }
 
   .vi-card {
-    width: 180px;
-    height: 280px;
+    width: 148px;
+    height: 230px;
   }
 
   .vi-card--active {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-8px) scale(1.07);
   }
 
   .vi-card__body {
-    top: calc(280px * 0.34);
+    top: calc(230px * 0.34);
   }
 
   .vi-card__label {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 }
