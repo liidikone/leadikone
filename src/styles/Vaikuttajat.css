@@ -254,19 +254,15 @@
 }
 
 /* ── CARD ACCENT ─────────────────────────────────────────────── */
-/* Accent lives inside .vi-card (overflow:visible) but is absolutely
-   positioned at bottom:0. It must be clipped to card width — we use
-   inset:0 left/right to match the card, NOT clip-path, so it stays sharp. */
+/* Accent lives inside .vi-card__clip so it is clipped to the rounded
+   border-radius automatically — no manual insets needed. */
 
 .vi-card__accent {
   position: absolute;
-  /* 1px above the very bottom edge */
-  bottom: 1px;
-  /* Inset by border-radius so the bar starts/ends inside the rounded corners */
-  left: 14px;
-  right: 14px;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 3px;
-  border-radius: 2px;
   z-index: 3;
   background: linear-gradient(to right, #00ff88 60%, rgba(0, 255, 136, 0.0) 100%);
   transform: scaleX(0);
