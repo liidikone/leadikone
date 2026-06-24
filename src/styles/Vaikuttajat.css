@@ -377,6 +377,9 @@
 
 /* ── MOBILE ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  .vaikuttajat__title {
+    font-size: clamp(5.5rem, 24vw, 9rem);
+  }
   .vi-scene-wrap {
     overflow-x: auto;
   }
