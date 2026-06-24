@@ -55,17 +55,18 @@ const influencers = [
   { id: 16, label: null, img: null },
 ]
 
-const CARD_W = 200   // px — smaller so zoom has room
-const CARD_H = 310   // px
-const CARD_GAP = 16  // px (= 1rem)
-const SCROLL_PAGE = 4 * (CARD_W + CARD_GAP)
+// Smaller base size so active scale/lift has room to grow into
+const CARD_W = 170
+const CARD_H = 265
+const CARD_GAP = 16
 
 function StackedCards() {
-  const [activeCard, setActiveCard]   = useState(influencers[0].id)
+  const [activeCard, setActiveCard]     = useState(influencers[0].id)
   const [canScrollLeft, setCanScrollLeft]   = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
-  const scrollRef = useRef(null)
-  const cardRefs  = useRef({})
+  const scrollRef    = useRef(null)
+  const cardRefs     = useRef({})
+  const activeIndexRef = useRef(0) // tracks current index for arrow nav
 
   /* Update left/right arrow visibility */
   const updateScrollState = useCallback(() => {
@@ -87,6 +88,8 @@ function StackedCards() {
         })
         if (best && bestRatio > 0.5) {
           const id = Number(best.target.dataset.cardId)
+          const idx = influencers.findIndex(c => c.id === id)
+          if (idx !== -1) activeIndexRef.current = idx
           setActiveCard((prev) => { if (prev !== id) { playCardSound(); return id } return prev })
         }
       },
@@ -138,13 +141,19 @@ function StackedCards() {
     }
   }, [])
 
-  const scrollRight = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: SCROLL_PAGE, behavior: 'smooth' })
+  /* Arrow nav: scroll to specific card element — avoids scroll-snap bounce */
+  const scrollToIndex = useCallback((idx) => {
+    const clampedIdx = Math.max(0, Math.min(influencers.length - 1, idx))
+    const targetCard = cardRefs.current[influencers[clampedIdx].id]
+    const track = scrollRef.current
+    if (!targetCard || !track) return
+    const paddingLeft = parseFloat(getComputedStyle(track).paddingLeft) || 0
+    track.scrollTo({ left: targetCard.offsetLeft - paddingLeft, behavior: 'smooth' })
+    activeIndexRef.current = clampedIdx
   }, [])
 
-  const scrollLeft = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: -SCROLL_PAGE, behavior: 'smooth' })
-  }, [])
+  const scrollRight = useCallback(() => scrollToIndex(activeIndexRef.current + 1), [scrollToIndex])
+  const scrollLeft  = useCallback(() => scrollToIndex(activeIndexRef.current - 1), [scrollToIndex])
 
   return (
     <div className="vi-wrapper" onPointerDown={() => getAudioCtx()}>
@@ -173,8 +182,7 @@ function StackedCards() {
         {/* LEFT FADE */}
         <div className={'vi-fade vi-fade--left' + (canScrollLeft ? ' vi-fade--visible' : '')} aria-hidden="true" />
 
-        {/* The scroll track — overflow-x:auto but NO overflow-y so shadows are free */}
-        {/* We achieve this via a padding-top trick on the inner rail */}
+        {/* The scroll track */}
         <div className="vi-scroll-track" ref={scrollRef}>
           <div className="vi-scroll-rail">
             {influencers.map((card) => {
