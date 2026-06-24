@@ -133,9 +133,9 @@ function MobileStack() {
   const drag = useRef({ active: false, startX: 0, startY: 0, startIdx: 0, lastSnap: 0, moved: false, baseX: 0 })
   const sceneRef = useRef(null)
 
-  const STEP = CARD_W_MOBILE * 0.6
+  const STEP = PEEK_MOBILE
 
-  function getTargetX(idx) { return -idx * STEP }
+  function getTargetX(idx) { return -idx * PEEK_MOBILE }
 
   function snapTo(idx) {
     const clamped = Math.max(0, Math.min(TOTAL_CARDS - 1, idx))
