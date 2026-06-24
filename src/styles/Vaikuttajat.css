@@ -260,16 +260,15 @@
 
 .vi-card__accent {
   position: absolute;
-  bottom: 0;
-  /* Match the card's own border-radius at the bottom corners */
-  left: 0;
-  right: 0;
+  /* 1px above the very bottom edge */
+  bottom: 1px;
+  /* Inset by border-radius so the bar starts/ends inside the rounded corners */
+  left: 14px;
+  right: 14px;
   height: 3px;
-  border-radius: 0 0 14px 14px;
+  border-radius: 2px;
   z-index: 3;
   background: linear-gradient(to right, #00ff88 60%, rgba(0, 255, 136, 0.0) 100%);
-  /* clip to card width so it never bleeds sideways */
-  clip-path: inset(0 0 0 0 round 0 0 14px 14px);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
