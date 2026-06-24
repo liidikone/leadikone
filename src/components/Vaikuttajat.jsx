@@ -1,68 +1,63 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import '../styles/Vaikuttajat.css'
 
-const CARD_W = 220
-const PEEK   = Math.round(CARD_W * 0.38)
+const CARD_W_DESKTOP = 220
+const CARD_W_MOBILE  = 180
+const PEEK_DESKTOP   = Math.round(CARD_W_DESKTOP * 0.38)
+const PEEK_MOBILE    = Math.round(CARD_W_MOBILE  * 0.38)
+const TOTAL_CARDS    = 16
 const CARDS_PER_PAGE = 8
-const TOTAL_CARDS = 16
-const TOTAL_PAGES = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE)
+const TOTAL_PAGES    = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE)
 
-let _audioCtx = null
-function getAudioCtx() {
-  if (!_audioCtx) {
-    _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-  }
-  if (_audioCtx.state === 'suspended') _audioCtx.resume()
-  return _audioCtx
+// ── Audio ─────────────────────────────────────────────────────────────────────
+
+let _audioCtx   = null
+let _audioReady = false
+
+function initAudio() {
+  if (_audioReady) return
+  try {
+    _audioCtx  = new (window.AudioContext || window.webkitAudioContext)()
+    _audioReady = true
+  } catch (_) {}
 }
 
 function playCardSound() {
+  if (!_audioReady || !_audioCtx) return
   try {
-    const ctx = getAudioCtx()
+    if (_audioCtx.state === 'suspended') _audioCtx.resume()
+    const ctx = _audioCtx
     const now = ctx.currentTime
     const dur = 0.09
-    const bufferSize = Math.floor(ctx.sampleRate * dur)
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
-    const data = buffer.getChannelData(0)
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
-    }
+    const size = Math.floor(ctx.sampleRate * dur)
+    const buf  = ctx.createBuffer(1, size, ctx.sampleRate)
+    const data = buf.getChannelData(0)
+    for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size)
     const noise = ctx.createBufferSource()
-    noise.buffer = buffer
+    noise.buffer = buf
     const bp = ctx.createBiquadFilter()
-    bp.type = 'bandpass'
-    bp.Q.value = 0.6
+    bp.type = 'bandpass'; bp.Q.value = 0.6
     bp.frequency.setValueAtTime(4200, now)
     bp.frequency.exponentialRampToValueAtTime(1500, now + dur)
     const gain = ctx.createGain()
     gain.gain.setValueAtTime(0.1, now)
     gain.gain.exponentialRampToValueAtTime(0.001, now + dur)
-    noise.connect(bp)
-    bp.connect(gain)
-    gain.connect(ctx.destination)
-    noise.start(now)
-    noise.stop(now + dur)
+    noise.connect(bp); bp.connect(gain); gain.connect(ctx.destination)
+    noise.start(now); noise.stop(now + dur)
   } catch (_) {}
 }
+
+// ── Data ──────────────────────────────────────────────────────────────────────
 
 const influencers = [
   { id: 1,  label: 'Anniina',  img: '/sisallontuottaja_01.avif' },
   { id: 2,  label: 'Pauliina', img: '/sisallontuottaja_01.avif' },
   { id: 3,  label: 'Santeri',  img: '/sisallontuottaja_01.avif' },
   { id: 4,  label: 'Veera',    img: '/sisallontuottaja_01.avif' },
-  { id: 5,  label: null, img: null },
-  { id: 6,  label: null, img: null },
-  { id: 7,  label: null, img: null },
-  { id: 8,  label: null, img: null },
-  { id: 9,  label: null, img: null },
-  { id: 10, label: null, img: null },
-  { id: 11, label: null, img: null },
-  { id: 12, label: null, img: null },
-  { id: 13, label: null, img: null },
-  { id: 14, label: null, img: null },
-  { id: 15, label: null, img: null },
-  { id: 16, label: null, img: null },
+  ...Array.from({ length: 12 }, (_, i) => ({ id: i + 5, label: null, img: null })),
 ]
+
+// ── Arrow button ───────────────────────────────────────────────────────────────
 
 function ArrowButton({ dir, onClick, disabled }) {
   const isBack = dir === 'back'
@@ -83,95 +78,117 @@ function ArrowButton({ dir, onClick, disabled }) {
   )
 }
 
-function StackedCards() {
-  const [activeCard, setActiveCard] = useState(influencers[0].id)
-  const [page, setPage] = useState(0)
+// ── Card renderer ──────────────────────────────────────────────────────────────
 
-  const pageCards  = influencers.slice(page * CARDS_PER_PAGE, (page + 1) * CARDS_PER_PAGE)
-  const stackWidth = CARD_W + (pageCards.length - 1) * PEEK
+function Card({ card, isActive, isDim, style }) {
+  const isEmpty = !card.img
+  return (
+    <div
+      className={
+        'vi-card' +
+        (isActive ? ' vi-card--active' : '') +
+        (isDim    ? ' vi-card--dim'    : '') +
+        (isEmpty  ? ' vi-card--empty'  : ' vi-card--filled')
+      }
+      style={style}
+    >
+      {isEmpty ? (
+        <div className="vi-card__inset">
+          <span className="vi-card__qmark">?</span>
+        </div>
+      ) : (
+        <>
+          <div className="vi-card__clip">
+            <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
+            <div className="vi-card__overlay" />
+            <div className="vi-card__accent" />
+          </div>
+          <div className="vi-card__body">
+            <span className="vi-card__label">{card.label}</span>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
-  function handleEnter(id) {
-    if (id !== activeCard) {
-      setActiveCard(id)
+// ── Mobile drag stack ──────────────────────────────────────────────────────────
+
+function MobileStack() {
+  const PEEK = PEEK_MOBILE
+  const [activeIdx, setActiveIdx] = useState(0)
+  const drag = useRef({ active: false, startX: 0, startIdx: 0, lastIdx: 0 })
+  const wrapRef = useRef(null)
+
+  function activateTo(idx) {
+    const clamped = Math.max(0, Math.min(TOTAL_CARDS - 1, idx))
+    if (clamped !== drag.current.lastIdx) {
+      drag.current.lastIdx = clamped
+      setActiveIdx(clamped)
       playCardSound()
     }
   }
 
-  function goTo(dir) {
-    const next = page + dir
-    if (next < 0 || next >= TOTAL_PAGES) return
-    const nextFirstId = influencers[next * CARDS_PER_PAGE]?.id ?? null
-    setActiveCard(nextFirstId)
-    setPage(next)
+  function onPointerDown(e) {
+    initAudio()
+    drag.current = { active: true, startX: e.clientX, startIdx: activeIdx, lastIdx: activeIdx }
+    wrapRef.current?.setPointerCapture(e.pointerId)
+    e.preventDefault()
   }
 
-  const onFirstInteraction = useCallback(() => {
-    getAudioCtx()
-  }, [])
+  function onPointerMove(e) {
+    if (!drag.current.active) return
+    const dx    = e.clientX - drag.current.startX
+    const delta = -Math.round(dx / PEEK)
+    activateTo(drag.current.startIdx + delta)
+  }
+
+  function onPointerUp() {
+    drag.current.active = false
+  }
 
   return (
-    <div className="vi-wrapper" onPointerDown={onFirstInteraction}>
+    <div className="vi-wrapper">
+      {/* SELAA hint sits above scene, aligned with the first card */}
+      <div className="vi-mobile-hint" aria-hidden="true">
+        <span className="vi-mobile-hint__text">SELAA</span>
+        <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+          <path d="M7 4L12 9L7 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+
       <div className="vi-scene-outer">
+        {/* The drag surface fills viewport width via CSS; cards overflow right */}
         <div
-          className="vi-scene-wrap"
-          onMouseLeave={() => {
-            const firstOnPage = pageCards[0]?.id ?? null
-            setActiveCard(firstOnPage)
-          }}
+          ref={wrapRef}
+          className="vi-scene-wrap vi-scene-wrap--mobile"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
         >
+          {/* Scene is wide enough to hold all cards */}
           <div
             className="vi-scene"
-            style={{ width: stackWidth + 'px', height: '360px' }}
+            style={{
+              width:  (CARD_W_MOBILE + (TOTAL_CARDS - 1) * PEEK) + 'px',
+              height: '300px',
+            }}
           >
-            {/* BACK arrow — left side of stack */}
-            <div className="vi-stack-arrow-wrap vi-stack-arrow-wrap--back">
-              <ArrowButton dir="back" onClick={() => goTo(-1)} disabled={page === 0} />
-            </div>
-
-            {/* FORWARD arrow — right side of stack */}
-            <div className="vi-stack-arrow-wrap vi-stack-arrow-wrap--forward">
-              <ArrowButton dir="forward" onClick={() => goTo(1)} disabled={page >= TOTAL_PAGES - 1} />
-            </div>
-
-            {pageCards.map((card, i) => {
-              const isActive = activeCard === card.id
-              const isDim    = activeCard !== null && !isActive
-              const isEmpty  = !card.img
-
-              return (
-                <div
-                  key={card.id}
-                  className={
-                    'vi-card' +
-                    (isActive ? ' vi-card--active' : '') +
-                    (isDim    ? ' vi-card--dim'    : '') +
-                    (isEmpty  ? ' vi-card--empty'  : ' vi-card--filled')
-                  }
-                  style={{
-                    left: i * PEEK + 'px',
-                    zIndex: isActive ? 50 : pageCards.length - i,
-                  }}
-                  onMouseEnter={() => handleEnter(card.id)}
-                >
-                  {isEmpty ? (
-                    <div className="vi-card__inset">
-                      <span className="vi-card__qmark">?</span>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="vi-card__clip">
-                        <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
-                        <div className="vi-card__overlay" />
-                        <div className="vi-card__accent" />
-                      </div>
-                      <div className="vi-card__body">
-                        <span className="vi-card__label">{card.label}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )
-            })}
+            {influencers.map((card, i) => (
+              <Card
+                key={card.id}
+                card={card}
+                isActive={i === activeIdx}
+                isDim={i !== activeIdx}
+                style={{
+                  left:   i * PEEK + 'px',
+                  zIndex: i === activeIdx ? 50 : TOTAL_CARDS - i,
+                  width:  CARD_W_MOBILE + 'px',
+                  height: '280px',
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -179,7 +196,84 @@ function StackedCards() {
   )
 }
 
+// ── Desktop hover stack ────────────────────────────────────────────────────────
+
+function DesktopStack() {
+  const PEEK = PEEK_DESKTOP
+  const [activeCard, setActiveCard] = useState(influencers[0].id)
+  const [page, setPage]             = useState(0)
+
+  const pageCards  = influencers.slice(page * CARDS_PER_PAGE, (page + 1) * CARDS_PER_PAGE)
+  const stackWidth = CARD_W_DESKTOP + (pageCards.length - 1) * PEEK
+
+  function handleEnter(id) {
+    if (id !== activeCard) { setActiveCard(id); playCardSound() }
+  }
+
+  function goTo(dir) {
+    const next = page + dir
+    if (next < 0 || next >= TOTAL_PAGES) return
+    setActiveCard(influencers[next * CARDS_PER_PAGE]?.id ?? null)
+    setPage(next)
+  }
+
+  return (
+    <div className="vi-wrapper" onPointerDown={initAudio}>
+      <div className="vi-scene-outer">
+        <div
+          className="vi-scene-wrap"
+          onMouseLeave={() => setActiveCard(pageCards[0]?.id ?? null)}
+        >
+          <div className="vi-scene" style={{ width: stackWidth + 'px', height: '360px' }}>
+            <div className="vi-stack-arrow-wrap vi-stack-arrow-wrap--back">
+              <ArrowButton dir="back" onClick={() => goTo(-1)} disabled={page === 0} />
+            </div>
+            <div className="vi-stack-arrow-wrap vi-stack-arrow-wrap--forward">
+              <ArrowButton dir="forward" onClick={() => goTo(1)} disabled={page >= TOTAL_PAGES - 1} />
+            </div>
+            {pageCards.map((card, i) => (
+              <Card
+                key={card.id}
+                card={card}
+                isActive={activeCard === card.id}
+                isDim={activeCard !== null && activeCard !== card.id}
+                style={{
+                  left:   i * PEEK + 'px',
+                  zIndex: activeCard === card.id ? 50 : pageCards.length - i,
+                  // desktop sizes come from CSS
+                }}
+                // pass onMouseEnter via wrapper div since Card doesn't take it
+              />
+            )).map((el, i) => (
+              <div key={pageCards[i].id} onMouseEnter={() => handleEnter(pageCards[i].id)} style={{ position: 'absolute', left: i * PEEK + 'px', zIndex: activeCard === pageCards[i].id ? 50 : pageCards.length - i }}>
+                <Card
+                  card={pageCards[i]}
+                  isActive={activeCard === pageCards[i].id}
+                  isDim={activeCard !== null && activeCard !== pageCards[i].id}
+                  style={{ position: 'static' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Root ───────────────────────────────────────────────────────────────────────
+
 export default function Vaikuttajat() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    setIsMobile(mq.matches)
+    const handler = (e) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
   return (
     <section className="vaikuttajat" id="vaikuttajat">
       <div className="vaikuttajat__inner">
@@ -195,7 +289,7 @@ export default function Vaikuttajat() {
             kasvattaa näkyvyyttä.
           </p>
         </div>
-        <StackedCards />
+        {isMobile ? <MobileStack /> : <DesktopStack />}
       </div>
     </section>
   )
