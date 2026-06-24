@@ -10,40 +10,47 @@ const CARDS_PER_PAGE = 8
 const TOTAL_PAGES    = Math.ceil(TOTAL_CARDS / CARDS_PER_PAGE)
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
+// AudioContext must be created/resumed directly inside a user-gesture handler.
+// We create it lazily on first hover/touch so it's always inside a gesture.
 
-let _audioCtx   = null
-let _audioReady = false
+let _audioCtx = null
 
-function initAudio() {
-  if (_audioReady) return
-  try {
-    _audioCtx  = new (window.AudioContext || window.webkitAudioContext)()
-    _audioReady = true
-  } catch (_) {}
+function getAudioCtx() {
+  if (!_audioCtx) {
+    try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)() } catch (_) {}
+  }
+  return _audioCtx
 }
 
 function playCardSound() {
-  if (!_audioReady || !_audioCtx) return
+  const ctx = getAudioCtx()
+  if (!ctx) return
   try {
-    if (_audioCtx.state === 'suspended') _audioCtx.resume()
-    const ctx = _audioCtx
-    const now = ctx.currentTime
-    const dur = 0.09
-    const size = Math.floor(ctx.sampleRate * dur)
-    const buf  = ctx.createBuffer(1, size, ctx.sampleRate)
-    const data = buf.getChannelData(0)
-    for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size)
-    const noise = ctx.createBufferSource()
-    noise.buffer = buf
-    const bp = ctx.createBiquadFilter()
-    bp.type = 'bandpass'; bp.Q.value = 0.6
-    bp.frequency.setValueAtTime(4200, now)
-    bp.frequency.exponentialRampToValueAtTime(1500, now + dur)
-    const gain = ctx.createGain()
-    gain.gain.setValueAtTime(0.1, now)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + dur)
-    noise.connect(bp); bp.connect(gain); gain.connect(ctx.destination)
-    noise.start(now); noise.stop(now + dur)
+    // Resume must happen in the same gesture tick
+    const play = () => {
+      const now  = ctx.currentTime
+      const dur  = 0.09
+      const size = Math.floor(ctx.sampleRate * dur)
+      const buf  = ctx.createBuffer(1, size, ctx.sampleRate)
+      const data = buf.getChannelData(0)
+      for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size)
+      const noise = ctx.createBufferSource()
+      noise.buffer = buf
+      const bp = ctx.createBiquadFilter()
+      bp.type = 'bandpass'; bp.Q.value = 0.6
+      bp.frequency.setValueAtTime(4200, now)
+      bp.frequency.exponentialRampToValueAtTime(1500, now + dur)
+      const gain = ctx.createGain()
+      gain.gain.setValueAtTime(0.1, now)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + dur)
+      noise.connect(bp); bp.connect(gain); gain.connect(ctx.destination)
+      noise.start(now); noise.stop(now + dur)
+    }
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play)
+    } else {
+      play()
+    }
   } catch (_) {}
 }
 
@@ -113,53 +120,54 @@ function Card({ card, isActive, isDim, style }) {
 }
 
 // ── Mobile drag stack ──────────────────────────────────────────────────────────
+// Uses touch-action: pan-x (set in CSS on .vi-scene-wrap--mobile) so the
+// browser handles vertical page scroll while we handle horizontal swipe.
+// No e.preventDefault() — that would block the vertical scroll on mobile.
 
 function MobileStack() {
   const PEEK = PEEK_MOBILE
   const [activeIdx, setActiveIdx] = useState(0)
-  // offsetX: live drag offset in px (0 when not dragging)
+  const [dragging, setDragging]   = useState(false)
   const [offsetX, setOffsetX]     = useState(0)
-  const drag = useRef({ active: false, startX: 0, startIdx: 0, lastSnap: 0 })
-  const wrapRef = useRef(null)
-
-  function snapTo(idx) {
-    const clamped = Math.max(0, Math.min(TOTAL_CARDS - 1, idx))
-    if (clamped !== drag.current.lastSnap) {
-      drag.current.lastSnap = clamped
-      playCardSound()
-    }
-    setActiveIdx(clamped)
-  }
+  const drag = useRef({ startX: 0, startIdx: 0, lastSnap: 0 })
 
   function onPointerDown(e) {
-    initAudio()
-    drag.current = { active: true, startX: e.clientX, startIdx: activeIdx, lastSnap: activeIdx }
-    wrapRef.current?.setPointerCapture(e.pointerId)
-    e.preventDefault()
+    // Only handle horizontal primary-button / single-touch
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    drag.current = { startX: e.clientX, startIdx: activeIdx, lastSnap: activeIdx }
+    setDragging(true)
+    setOffsetX(0)
+    // Capture so we get move/up even if pointer leaves element
+    e.currentTarget.setPointerCapture(e.pointerId)
   }
 
   function onPointerMove(e) {
-    if (!drag.current.active) return
-    const dx = e.clientX - drag.current.startX
-    setOffsetX(dx)
-    // Snap sound mid-drag when crossing a full PEEK threshold
-    const delta = -Math.round(dx / PEEK)
+    if (!dragging) return
+    const dx       = e.clientX - drag.current.startX
+    const delta    = -Math.round(dx / PEEK)
     const tentative = Math.max(0, Math.min(TOTAL_CARDS - 1, drag.current.startIdx + delta))
+    setOffsetX(dx)
     if (tentative !== drag.current.lastSnap) {
       drag.current.lastSnap = tentative
-      playCardSound()
       setActiveIdx(tentative)
+      playCardSound()
     }
   }
 
   function onPointerUp(e) {
-    if (!drag.current.active) return
-    drag.current.active = false
+    if (!dragging) return
     const dx    = e.clientX - drag.current.startX
     const delta = -Math.round(dx / PEEK)
-    snapTo(drag.current.startIdx + delta)
+    const final = Math.max(0, Math.min(TOTAL_CARDS - 1, drag.current.startIdx + delta))
+    setActiveIdx(final)
     setOffsetX(0)
+    setDragging(false)
   }
+
+  // translateX: during drag = raw offset; on release = snap offset so cards
+  // shift back to show the active card at position 0 with a smooth transition.
+  const snapOffset = -activeIdx * PEEK
+  const translateX = dragging ? offsetX - activeIdx * PEEK + drag.current.startIdx * PEEK : snapOffset
 
   return (
     <div className="vi-wrapper">
@@ -172,21 +180,19 @@ function MobileStack() {
 
       <div className="vi-scene-outer">
         <div
-          ref={wrapRef}
-          className={'vi-scene-wrap vi-scene-wrap--mobile' + (drag.current.active ? ' vi-scene-wrap--draggable' : '')}
+          className={'vi-scene-wrap vi-scene-wrap--mobile' + (dragging ? ' vi-scene-wrap--draggable' : '')}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
         >
-          {/* Scene translates as a whole during drag, snaps on release */}
           <div
             className="vi-scene"
             style={{
-              width:     (CARD_W_MOBILE + (TOTAL_CARDS - 1) * PEEK) + 'px',
-              height:    '300px',
-              transform: `translateX(${offsetX}px)`,
-              transition: drag.current.active ? 'none' : 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
+              width:      (CARD_W_MOBILE + (TOTAL_CARDS - 1) * PEEK) + 'px',
+              height:     '300px',
+              transform:  `translateX(${translateX}px)`,
+              transition: dragging ? 'none' : 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             {influencers.map((card, i) => (
@@ -220,10 +226,11 @@ function DesktopStack() {
   const pageCards  = influencers.slice(page * CARDS_PER_PAGE, (page + 1) * CARDS_PER_PAGE)
   const stackWidth = CARD_W_DESKTOP + (pageCards.length - 1) * PEEK
 
+  // Called directly from onMouseEnter — this IS a user gesture so AudioContext
+  // can be created and resumed here without needing a prior click.
   function handleEnter(id) {
-    initAudio()
     playCardSound()
-    if (id !== activeCard) { setActiveCard(id) }
+    if (id !== activeCard) setActiveCard(id)
   }
 
   function goTo(dir) {
@@ -234,7 +241,7 @@ function DesktopStack() {
   }
 
   return (
-    <div className="vi-wrapper" onPointerDown={initAudio}>
+    <div className="vi-wrapper">
       <div className="vi-scene-outer">
         <div
           className="vi-scene-wrap"
@@ -248,24 +255,19 @@ function DesktopStack() {
               <ArrowButton dir="forward" onClick={() => goTo(1)} disabled={page >= TOTAL_PAGES - 1} />
             </div>
             {pageCards.map((card, i) => (
-              <Card
+              <div
                 key={card.id}
-                card={card}
-                isActive={activeCard === card.id}
-                isDim={activeCard !== null && activeCard !== card.id}
+                onMouseEnter={() => handleEnter(card.id)}
                 style={{
-                  left:   i * PEEK + 'px',
-                  zIndex: activeCard === card.id ? 50 : pageCards.length - i,
-                  // desktop sizes come from CSS
+                  position: 'absolute',
+                  left:     i * PEEK + 'px',
+                  zIndex:   activeCard === card.id ? 50 : pageCards.length - i,
                 }}
-                // pass onMouseEnter via wrapper div since Card doesn't take it
-              />
-            )).map((el, i) => (
-              <div key={pageCards[i].id} onMouseEnter={() => handleEnter(pageCards[i].id)} style={{ position: 'absolute', left: i * PEEK + 'px', zIndex: activeCard === pageCards[i].id ? 50 : pageCards.length - i }}>
+              >
                 <Card
-                  card={pageCards[i]}
-                  isActive={activeCard === pageCards[i].id}
-                  isDim={activeCard !== null && activeCard !== pageCards[i].id}
+                  card={card}
+                  isActive={activeCard === card.id}
+                  isDim={activeCard !== null && activeCard !== card.id}
                   style={{ position: 'static' }}
                 />
               </div>
