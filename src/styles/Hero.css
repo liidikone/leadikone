@@ -22,8 +22,6 @@
   object-fit: cover;
   object-position: center;
   display: block;
-  will-change: transform;
-  transform: translateZ(0);
 }
 
 .hero__bg::after {
