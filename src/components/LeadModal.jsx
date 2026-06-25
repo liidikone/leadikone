@@ -11,11 +11,15 @@ export default function LeadModal({ isOpen, onClose, type, config, priceSummary 
   const [status, setStatus] = useState('idle') // idle | loading | success | error
   const [errorMsg, setErrorMsg] = useState('')
 
-  // Piilota/näytä AI-widget kun modal avataan/suljetaan
+  // Piilota/näytä AI-widget ja chat-label kun modal avataan/suljetaan
   useEffect(() => {
     const widget = document.querySelector('[data-synabs-widget-slug]')
-    if (!widget) return
-    widget.style.display = isOpen ? 'none' : ''
+    if (widget) widget.style.display = isOpen ? 'none' : ''
+    if (isOpen) {
+      document.body.classList.add('lead-modal-open')
+    } else {
+      document.body.classList.remove('lead-modal-open')
+    }
   }, [isOpen])
 
   if (!isOpen) return null
