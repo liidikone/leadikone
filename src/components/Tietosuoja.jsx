@@ -38,7 +38,7 @@ export default function Tietosuoja() {
 
           <section className="tietosuoja__section">
             <h2>Google Analytics</h2>
-            <p>Käytämme Google Analytics -palvelua sivuston kävijätilastojen seurantaan. Google Analytics kerää anonyymejä tietoja sivuston käytöstä evästeiden avulla. Tiedot käsitellään Googlen palvelimilla. Lisätietoja Googlen tietosuojakäytännöistä löydät osoitteesta <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="tietosuoja__email">policies.google.com/privacy</a>.</p>
+            <p>Käytämme Google Analytics -palvelua verkkosivuston kävijätilastojen ja käytön analysointiin. Google Analytics voi kerätä tietoja sivuston käytöstä evästeiden avulla. Tietoja käsitellään Googlen palvelimilla Googlen tietosuojakäytännön mukaisesti. Lisätietoja Googlen tietosuojakäytännöistä löydät osoitteesta <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="tietosuoja__email">policies.google.com/privacy</a>.</p>
           </section>
 
           <section className="tietosuoja__section">
@@ -55,7 +55,7 @@ export default function Tietosuoja() {
 
           <section className="tietosuoja__section">
             <h2>Tietojen säilytysaika</h2>
-            <p>Säilytämme henkilötietoja niin kauan kuin se on tarpeen tässä selosteessa kuvattuihin tarkoituksiin tai lain edellyttämällä tavalla. Yhteydenottolomakkeen tiedot poistetaan 12 kuukauden kuluessa yhteydenoton käsittelystä.</p>
+            <p>Säilytämme henkilötietoja niin kauan kuin se on tarpeen tässä selosteessa kuvattuihin tarkoituksiin tai lain edellyttämällä tavalla. Yhteydenottolomakkeen tietoja säilytetään niin kauan kuin asian käsittely ja mahdolliset jatkotoimet edellyttävät, kuitenkin enintään 12 kuukautta yhteydenoton käsittelystä.</p>
           </section>
 
           <section className="tietosuoja__section">
