@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import '../styles/Tietosuoja.css'
-import Navbar from '../components/Navbar'
+import Navbar from './Navbar'
 
 export default function Tietosuoja() {
   return (
@@ -9,7 +9,7 @@ export default function Tietosuoja() {
       <main className="tietosuoja">
         <div className="tietosuoja__inner">
           <h1 className="tietosuoja__title">Tietosuojaseloste</h1>
-          <p className="tietosuoja__updated">Päivitetty: kesäkuu 2026</p>
+          <p className="tietosuoja__updated">Päivitetty: kesäkuu 2025</p>
 
           <section className="tietosuoja__section">
             <h2>Rekisterinpitäjä</h2>
@@ -81,7 +81,7 @@ export default function Tietosuoja() {
             <p>Sinulla on myös oikeus tehdä valitus tietosuojaviranomaiselle. Suomessa valvova viranomainen on Tietosuojavaltuutetun toimisto.</p>
           </section>
 
-          <a href="/" className="tietosuoja__back">Takaisin etusivulle</a>
+          <a href="/" className="tietosuoja__back">← Takaisin etusivulle</a>
         </div>
       </main>
     </>
