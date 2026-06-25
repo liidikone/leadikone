@@ -2,16 +2,6 @@
    NAVBAR.CSS — mustavalko-teema
    ============================================ */
 
-/*
- * FIX: hero__ref-track käyttää will-change:transform + translateZ(0),
- * jotka luovat uuden stacking contextin ja kaappaavat position:fixed -elementin.
- * isolation:isolate katkaisee tämän ILMAN että se luo containing blockia
- * fixed-elementeille (toisin kuin transform tekee).
- */
-.hero {
-  isolation: isolate;
-}
-
 .navbar {
   position: fixed;
   top: 0;
