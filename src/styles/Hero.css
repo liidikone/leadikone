@@ -201,10 +201,7 @@
    ============================================================ */
 @media (max-width: 768px) {
   .hero__title { font-size: clamp(5.5rem, 24vw, 9rem); }
-  .hero__content {
-    padding-inline: var(--space-6);
-    padding-top: var(--space-16);
-  }
+  .hero__content { padding-inline: var(--space-6); }
   .hero__lead { font-size: clamp(var(--text-xl), 5.5vw, var(--text-3xl)); }
 }
 
