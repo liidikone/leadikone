@@ -255,7 +255,7 @@ function VideoPackage() {
           </div>
         </div>
         <button className="hp-cta" onClick={() => setModalOpen(true)}>
-          Pyydä tarjous →
+          Pyydä tarjous
         </button>
       </div>
     </div>
