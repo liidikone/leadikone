@@ -1,0 +1,264 @@
+/* ============================================================
+   CookieBanner.css — Someton-teeman mukainen evästebanneri
+   Accent: #00ff88 (teeman vihreä)
+   ============================================================ */
+
+/* Overlay (vain paneelitilassa, estää scrollauksen paneelin alla) */
+.cb-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* ── Yhteinen wrapper ── */
+.cb-banner {
+  pointer-events: all;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 24px;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+  overflow: hidden;
+  animation: cb-slide-up 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cb-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── BANNERI (yksi rivi) ── */
+.cb-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  flex-wrap: wrap;
+}
+
+.cb-bar__text {
+  flex: 1;
+  min-width: 200px;
+  font-family: 'Oxanium', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #333333;
+  line-height: 1.5;
+}
+
+.cb-bar__link {
+  color: #000000;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+.cb-bar__link:hover {
+  color: #00ff88;
+}
+
+.cb-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* ── ASETUSPANEELI ── */
+.cb-panel {
+  padding: 28px 28px 24px;
+}
+
+.cb-panel__title {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #000000;
+  margin-bottom: 8px;
+}
+
+.cb-panel__desc {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 0.8125rem;
+  color: #555555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.cb-panel__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.cb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 1px solid #e8e8e8;
+  border-radius: 3px;
+  gap: 16px;
+}
+
+.cb-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cb-row__name {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #000000;
+}
+
+.cb-row__desc {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 0.75rem;
+  color: #777777;
+}
+
+/* ── Toggle-kytkin ── */
+.cb-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  background: #d0d0d0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.cb-toggle--on {
+  background: #00ff88;
+}
+
+.cb-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.cb-toggle--on .cb-toggle__thumb {
+  transform: translateX(20px);
+}
+
+/* ── Paneelin footer ── */
+.cb-panel__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ── Napit ── */
+.cb-btn {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Hyväksy / Tallenna — teeman vihreä */
+.cb-btn--accept {
+  background: #00ff88;
+  color: #000000;
+  border-color: #00ff88;
+}
+.cb-btn--accept:hover {
+  background: #00e87a;
+  border-color: #00e87a;
+}
+
+/* Muuta asetuksia / Takaisin — valkoinen reunalla */
+.cb-btn--settings {
+  background: transparent;
+  color: #000000;
+  border-color: #d0d0d0;
+}
+.cb-btn--settings:hover {
+  border-color: #000000;
+}
+
+/* Hylkää kaikki — musta */
+.cb-btn--deny {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+.cb-btn--deny:hover {
+  background: #222222;
+}
+
+/* ── Responsiivisuus ── */
+@media (max-width: 600px) {
+  .cb-banner {
+    margin: 0 0 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .cb-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .cb-bar__actions {
+    width: 100%;
+  }
+
+  .cb-btn--accept {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .cb-panel {
+    padding: 20px 16px 20px;
+  }
+
+  .cb-panel__footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cb-panel__footer .cb-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
