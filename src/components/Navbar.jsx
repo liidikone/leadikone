@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import '../styles/Navbar.css'
 
 const navLinks = [
@@ -28,7 +29,7 @@ export default function Navbar() {
     menuOpen ? 'navbar--menu-open' : '',
   ].filter(Boolean).join(' ')
 
-  return (
+  const navbar = (
     <>
       <nav className={navClass} id="navbar">
         <div className="navbar__inner">
@@ -98,4 +99,6 @@ export default function Navbar() {
       )}
     </>
   )
+
+  return createPortal(navbar, document.body)
 }
