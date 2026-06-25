@@ -201,7 +201,10 @@
    ============================================================ */
 @media (max-width: 768px) {
   .hero__title { font-size: clamp(5.5rem, 24vw, 9rem); }
-  .hero__content { padding-inline: var(--space-6); }
+  .hero__content {
+    padding-inline: var(--space-6);
+    padding-top: var(--space-16);
+  }
   .hero__lead { font-size: clamp(var(--text-xl), 5.5vw, var(--text-3xl)); }
 }
 
@@ -311,6 +314,10 @@
   gap: 6rem;
   width: max-content;
   animation: ref-scroll 28s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 .hero__ref-wheel:hover .hero__ref-track {
   animation-play-state: paused;
