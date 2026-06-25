@@ -6,7 +6,10 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  /* MUUTOS: right: 0 poistettu → width: 100vw
+     Syy: Android Chrome laskee right:0 html/body layout-leveyden mukaan
+     (1224px), ei viewportin mukaan. 100vw on aina visuaalinen viewport. */
+  width: 100vw;
   z-index: var(--z-nav);
   height: var(--nav-height);
   background: transparent;
@@ -152,7 +155,9 @@
   position: absolute;
   top: var(--nav-height);
   left: 0;
-  right: 0;
+  /* MUUTOS: right: 0 poistettu → width: 100vw
+     Sama syy kuin .navbar:lla — viewport-yksikkö ei riipu html/body-leveydestä */
+  width: 100vw;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
