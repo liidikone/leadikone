@@ -110,12 +110,12 @@ function Card({ card, isActive, isDim, style }) {
         </div>
       ) : (
         <>
-          <div className="vi-card__clip">
+          <div className="vi-card__clip" style={{ pointerEvents: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}>
             <div className="vi-card__bg" style={{ backgroundImage: `url('${card.img}')` }} />
             <div className="vi-card__overlay" />
             <div className="vi-card__accent" />
           </div>
-          <div className="vi-card__body">
+          <div className="vi-card__body" style={{ pointerEvents: 'none' }}>
             <span className="vi-card__label">{card.label}</span>
           </div>
         </>
@@ -125,48 +125,51 @@ function Card({ card, isActive, isDim, style }) {
 }
 
 // ── Mobile drag stack ──────────────────────────────────────────────────────────
+//
+// Strategy: NEVER call preventDefault(). Use touch-action:pan-y everywhere so
+// the browser always owns vertical scroll. We track horizontal delta purely in
+// JS and move the strip ourselves — the browser scrolls the page in parallel
+// when the gesture is vertical. No conflict possible.
 
 function MobileStack() {
   const [activeIdx, setActiveIdx] = useState(0)
   const activeIdxRef = useRef(0)
-  const translateXRef = useRef(0)
-  const sceneRef = useRef(null)
-  const drag = useRef({
-    active: false,
-    lockedH: false,   // confirmed horizontal drag
-    aborted: false,   // confirmed vertical — ignore rest of gesture
-    startX: 0,
-    startY: 0,
+  const sceneRef     = useRef(null)
+
+  // All mutable drag state lives in a single ref — no stale closures.
+  const d = useRef({
+    tracking: false,
+    startX:   0,
+    startY:   0,
     startIdx: 0,
+    baseX:    0,
+    lastX:    0,
+    lastTime: 0,
+    velocity: 0,   // px/ms, low-pass filtered
     lastSnap: 0,
-    baseX: 0,
-    prevX: 0,
-    prevTime: 0,
-    velocity: 0,
   })
 
   const PEEK = PEEK_MOBILE
 
-  function getTargetX(idx) { return -idx * PEEK }
+  function getTargetX(idx) {
+    return -idx * PEEK
+  }
 
-  function setX(x) {
-    translateXRef.current = x
-    if (sceneRef.current) {
-      sceneRef.current.style.transform = `translateX(${x}px)`
-    }
+  // Apply transform directly — no React setState during drag
+  function applyX(x) {
+    if (sceneRef.current) sceneRef.current.style.transform = `translateX(${x}px)`
   }
 
   function snapTo(idx) {
     const clamped = Math.max(0, Math.min(TOTAL_CARDS - 1, idx))
-    if (clamped !== drag.current.lastSnap) {
-      drag.current.lastSnap = clamped
+    if (clamped !== d.current.lastSnap) {
+      d.current.lastSnap = clamped
       playCardSound()
     }
-    // Enable transition for snap
     if (sceneRef.current) {
       sceneRef.current.style.transition = 'transform 0.28s cubic-bezier(0.18, 1, 0.32, 1)'
     }
-    setX(getTargetX(clamped))
+    applyX(getTargetX(clamped))
     activeIdxRef.current = clamped
     setActiveIdx(clamped)
   }
@@ -175,111 +178,99 @@ function MobileStack() {
     const el = sceneRef.current
     if (!el) return
 
-    function handleTouchStart(e) {
+    function onTouchStart(e) {
       const t = e.touches[0]
-      const curIdx = activeIdxRef.current
-      drag.current = {
-        active: true,
-        lockedH: false,
-        aborted: false,
-        startX: t.clientX,
-        startY: t.clientY,
-        startIdx: curIdx,
-        lastSnap: curIdx,
-        baseX: getTargetX(curIdx),
-        prevX: t.clientX,
-        prevTime: performance.now(),
+      const idx = activeIdxRef.current
+      d.current = {
+        tracking: true,
+        startX:   t.clientX,
+        startY:   t.clientY,
+        startIdx: idx,
+        baseX:    getTargetX(idx),
+        lastX:    t.clientX,
+        lastTime: performance.now(),
         velocity: 0,
+        lastSnap: idx,
       }
+      // Kill transition during drag
+      if (sceneRef.current) sceneRef.current.style.transition = 'none'
     }
 
-    function handleTouchMove(e) {
-      const d = drag.current
-      if (!d.active || d.aborted) return
+    function onTouchMove(e) {
+      const s = d.current
+      if (!s.tracking) return
 
-      const t = e.touches[0]
-      const dx = t.clientX - d.startX
-      const dy = t.clientY - d.startY
+      const t   = e.touches[0]
+      const dx  = t.clientX - s.startX
+      const dy  = t.clientY - s.startY
 
-      // Wait for enough movement before locking axis
-      if (!d.lockedH) {
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        if (dist < 6) return // dead zone
-        if (Math.abs(dy) > Math.abs(dx)) {
-          // Vertical wins — abort and let browser scroll
-          d.aborted = true
-          return
-        }
-        // Horizontal wins — lock in
-        d.lockedH = true
-        // Disable transition during drag
-        if (sceneRef.current) {
-          sceneRef.current.style.transition = 'none'
-        }
+      // If the gesture is clearly more vertical than horizontal, stop tracking
+      // so we don't accidentally move the strip while user is scrolling.
+      // We do NOT call preventDefault — the browser scrolls freely.
+      if (Math.abs(dy) > Math.abs(dx) + 4) {
+        s.tracking = false
+        // Snap back to current index cleanly
+        snapTo(activeIdxRef.current)
+        return
       }
 
-      // Only prevent default after confirmed horizontal lock
-      e.preventDefault()
-
-      // Velocity tracking
+      // Velocity (px/ms) with low-pass filter
       const now = performance.now()
-      const dt = now - d.prevTime
+      const dt  = now - s.lastTime
       if (dt > 0) {
-        const rawVel = (t.clientX - d.prevX) / dt
-        d.velocity = d.velocity * 0.6 + rawVel * 0.4
+        const raw = (t.clientX - s.lastX) / dt
+        s.velocity = s.velocity * 0.6 + raw * 0.4
       }
-      d.prevX = t.clientX
-      d.prevTime = now
+      s.lastX    = t.clientX
+      s.lastTime = now
 
-      const raw = d.baseX + dx
-      const minX = getTargetX(TOTAL_CARDS - 1)
-      const maxX = 0
+      // Move the strip — rubber-band at edges
+      const raw   = s.baseX + dx
+      const minX  = getTargetX(TOTAL_CARDS - 1)
+      const maxX  = 0
       const clamped =
         raw < minX ? minX + (raw - minX) * 0.18 :
         raw > maxX ? maxX + (raw - maxX) * 0.18 : raw
 
-      setX(clamped)
+      applyX(clamped)
 
+      // Tick active card as user drags
       const tentative = Math.max(0, Math.min(TOTAL_CARDS - 1, Math.round(-clamped / PEEK)))
-      if (tentative !== d.lastSnap) {
-        d.lastSnap = tentative
+      if (tentative !== s.lastSnap) {
+        s.lastSnap = tentative
         playCardSound()
+        activeIdxRef.current = tentative
         setActiveIdx(tentative)
       }
     }
 
-    function handleTouchEnd(e) {
-      const d = drag.current
-      if (!d.active) return
-      d.active = false
-      if (!d.lockedH || d.aborted) return
+    function onTouchEnd(e) {
+      const s = d.current
+      if (!s.tracking) return
+      s.tracking = false
 
-      const dx = e.changedTouches[0].clientX - d.startX
-      const momentumDx = d.velocity * 120
-      const totalDx = dx + momentumDx
+      const dx         = e.changedTouches[0].clientX - s.startX
+      const momentumDx = s.velocity * 100          // project ~100ms forward
+      const totalDx    = dx + momentumDx
 
-      let next = d.startIdx
-      if (totalDx < -30) {
-        next = d.startIdx + Math.max(1, Math.round(-totalDx / PEEK))
-      } else if (totalDx > 30) {
-        next = d.startIdx - Math.max(1, Math.round(totalDx / PEEK))
-      }
+      let next = s.startIdx
+      if (totalDx < -20)      next = s.startIdx + Math.max(1, Math.round(-totalDx / PEEK))
+      else if (totalDx > 20)  next = s.startIdx - Math.max(1, Math.round(totalDx / PEEK))
 
       snapTo(next)
     }
 
-    // passive: false only so we can preventDefault on confirmed horizontal swipes
-    el.addEventListener('touchstart', handleTouchStart, { passive: true })
-    el.addEventListener('touchmove',  handleTouchMove,  { passive: false })
-    el.addEventListener('touchend',   handleTouchEnd,   { passive: true })
+    // All passive — we never call preventDefault
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove',  onTouchMove,  { passive: true })
+    el.addEventListener('touchend',   onTouchEnd,   { passive: true })
 
     return () => {
-      el.removeEventListener('touchstart', handleTouchStart)
-      el.removeEventListener('touchmove',  handleTouchMove)
-      el.removeEventListener('touchend',   handleTouchEnd)
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove',  onTouchMove)
+      el.removeEventListener('touchend',   onTouchEnd)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // mount once — drag.current ref carries fresh state, activeIdx via closure on snapTo is handled via ref
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="vi-wrapper">
@@ -296,12 +287,11 @@ function MobileStack() {
             ref={sceneRef}
             className="vi-scene"
             style={{
-              width:  (CARD_W_MOBILE + (TOTAL_CARDS - 1) * PEEK) + 'px',
-              height: '300px',
-              transform: `translateX(0px)`,
-              // touch-action: auto — browser decides scroll direction freely
-              // we manually call preventDefault only after horizontal lock
-              touchAction: 'auto',
+              width:      (CARD_W_MOBILE + (TOTAL_CARDS - 1) * PEEK) + 'px',
+              height:     '300px',
+              transform:  'translateX(0px)',
+              // pan-y: browser owns vertical scroll at all times, no exceptions
+              touchAction: 'pan-y',
             }}
           >
             {influencers.map((card, i) => (
