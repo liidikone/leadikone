@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import '../styles/Palvelut.css'
 
 const services = [
@@ -7,8 +8,23 @@ const services = [
 ]
 
 function ServiceCard({ title, text, image, bgPosition }) {
+  const ref = useRef(null)
+  const [active, setActive] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { threshold: 0.55 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div className="ps-card">
+    <div className={`ps-card${active ? ' ps-card--color' : ''}`} ref={ref}>
       <div className="ps-card__bg" style={{ backgroundImage: `url('${image}')`, backgroundPosition: bgPosition }} />
       <div className="ps-card__overlay" />
       <div className="ps-card__body">
