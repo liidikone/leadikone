@@ -208,6 +208,10 @@
 }
 
 @media (max-width: 1024px) {
+  .navbar {
+    position: sticky;
+    top: 0;
+  }
   .navbar__right { display: none; }
   .navbar__hamburger { display: flex; }
   .navbar__mobile-menu {
