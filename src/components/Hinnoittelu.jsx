@@ -505,7 +505,7 @@ export default function Hinnoittelu() {
       if (tab === 'ai') {
         setActiveTab('video')
         setFlashTab('ai')
-        setTimeout(() => setFlashTab(null), 900)
+        setTimeout(() => setFlashTab(null), 1600)
       } else {
         setActiveTab(tab)
       }
