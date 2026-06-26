@@ -186,6 +186,13 @@ body.lead-modal-open .hero__chat-label {
     text-align: right;
     white-space: nowrap;
   }
+
+  /* Kun evästebanneri on auki: siirrä chat-label ja widget sen yläpuolelle */
+  body.cookie-banner-open .hero__chat-label {
+    opacity: 0;
+    pointer-events: none;
+    animation: none;
+  }
 }
 @keyframes label-pop {
   0%   { opacity: 0; transform: scale(0.4); }
