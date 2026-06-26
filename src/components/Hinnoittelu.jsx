@@ -497,6 +497,22 @@ const TABS = [
 /* ── MAIN EXPORT ─────────────────────────────────────────── */
 export default function Hinnoittelu() {
   const [activeTab, setActiveTab] = useState('video')
+  const [flashTab, setFlashTab]   = useState(null)
+
+  useEffect(() => {
+    function onSelectTab(e) {
+      const { tab } = e.detail
+      if (tab === 'ai') {
+        setActiveTab('video')
+        setFlashTab('ai')
+        setTimeout(() => setFlashTab(null), 900)
+      } else {
+        setActiveTab(tab)
+      }
+    }
+    window.addEventListener('someton:selectTab', onSelectTab)
+    return () => window.removeEventListener('someton:selectTab', onSelectTab)
+  }, [])
 
   const ActiveComponent = TABS.find(t => t.id === activeTab)?.component
 
@@ -508,7 +524,6 @@ export default function Hinnoittelu() {
           <h2 className="hinnoittelu__title">
             LIIDIK<span className="hinnoittelu__title-on">ON</span>E
           </h2>
-
         </div>
 
         <div>
@@ -516,7 +531,12 @@ export default function Hinnoittelu() {
             {TABS.map(tab => (
               <button
                 key={tab.id}
-                className={`hp-tab${activeTab === tab.id ? ' hp-tab--active' : ''}${tab.coming ? ' hp-tab--coming' : ''}`}
+                className={
+                  `hp-tab` +
+                  (activeTab === tab.id ? ' hp-tab--active' : '') +
+                  (tab.coming ? ' hp-tab--coming' : '') +
+                  (flashTab === tab.id ? ' hp-tab--flash' : '')
+                }
                 onClick={() => !tab.coming && setActiveTab(tab.id)}
               >
                 {tab.label}
