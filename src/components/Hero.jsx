@@ -1,8 +1,10 @@
 "use client"
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import '../styles/Hero.css'
 
 export default function Hero() {
+  const [chatOpen, setChatOpen] = useState(false)
+
   useEffect(() => {
     function loadSynabsWidget() {
       if (document.querySelector('script[src="https://synabs-admin.vercel.app/liidikone-widget.js"]')) return
@@ -19,6 +21,44 @@ export default function Hero() {
       document.addEventListener('DOMContentLoaded', loadSynabsWidget)
       return () => document.removeEventListener('DOMContentLoaded', loadSynabsWidget)
     }
+  }, [])
+
+  useEffect(() => {
+    let panelObserver = null
+    let hostObserver = null
+    function watchPanel(winWrap) {
+      const update = () => setChatOpen(winWrap.classList.contains('open'))
+      update()
+      panelObserver = new MutationObserver(update)
+      panelObserver.observe(winWrap, { attributes: true, attributeFilter: ['class'] })
+    }
+    function tryAttach() {
+      const host = document.querySelector('[data-synabs-widget-slug]')
+      if (host && host.shadowRoot) {
+        const winWrap = host.shadowRoot.getElementById('win-wrap')
+        if (winWrap) { watchPanel(winWrap); return true }
+      }
+      return false
+    }
+    if (!tryAttach()) {
+      hostObserver = new MutationObserver(() => {
+        if (tryAttach() && hostObserver) { hostObserver.disconnect(); hostObserver = null }
+      })
+      hostObserver.observe(document.body, { childList: true, subtree: true })
+    }
+    return () => {
+      if (panelObserver) panelObserver.disconnect()
+      if (hostObserver) hostObserver.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    function handleDocClick(e) {
+      const target = e.target.closest('[id*="synabs" i], [class*="synabs" i]')
+      if (target) setChatOpen(true)
+    }
+    document.addEventListener('click', handleDocClick, true)
+    return () => document.removeEventListener('click', handleDocClick, true)
   }, [])
 
   // Järjestys: autodel, autokeskus, flyers, ilona tampere, renkaatalle,
@@ -68,7 +108,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <p className="hero__chat-label">
+      <p className={`hero__chat-label${chatOpen ? ' is-hidden' : ''}`}>
         Kysymyksiä?<br />Kysy AI agentilta
       </p>
     </section>
