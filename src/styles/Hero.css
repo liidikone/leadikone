@@ -78,11 +78,9 @@
   max-width: 770px;
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-10);
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100vw;
+  margin-left: calc(-1 * var(--gutter));
   text-align: center;
-  white-space: nowrap;
 }
 
 .hero__title-on {
@@ -217,13 +215,7 @@ body.lead-modal-open .hero__chat-label {
 @media (max-width: 768px) {
   .hero__title { font-size: clamp(5.5rem, 24vw, 9rem); }
   .hero__content { padding-inline: var(--space-6); }
-  .hero__lead {
-    font-size: clamp(var(--text-xl), 5.5vw, var(--text-3xl));
-    position: static;
-    transform: none;
-    text-align: center;
-    white-space: normal;
-  }
+  .hero__lead { font-size: clamp(var(--text-xl), 5.5vw, var(--text-3xl)); }
 }
 
 /* ============================================================
