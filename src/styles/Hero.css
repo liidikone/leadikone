@@ -191,34 +191,29 @@ body.lead-modal-open .hero__chat-label {
 /* ============================================================
    RED LINES
    ============================================================ */
-.hero__lead-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0;
-  width: 100%;
-  position: relative;
-}
 .hero__line {
+  position: absolute;
   height: 3px;
   background: #e8000d;
-  flex-shrink: 0;
-  animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.8s both;
+  z-index: 3;
+  /* slogan on noin 60% hero-korkeudesta */
+  top: 58%;
 }
 .hero__line--left {
-  width: clamp(60px, 8vw, 120px);
-  transform-origin: right center;
+  left: 0;
+  width: 22%;
+  transform-origin: left center;
+  animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 .hero__line--right {
-  width: 100vw;
-  transform-origin: left center;
+  right: -50%;
+  width: 22%;
+  transform-origin: right center;
+  animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 @keyframes red-line-slide {
   from { transform: scaleX(0); opacity: 0; }
   to   { transform: scaleX(1); opacity: 1; }
-}
-.hero__mobile-lines {
-  display: none;
 }
 
 /* ============================================================
@@ -244,23 +239,18 @@ body.lead-modal-open .hero__chat-label {
     margin: 0;
     z-index: 2;
   }
-  .hero__lead-row {
-    display: none;
+  /* viivat referenssipalkin päälle, 40% vasemmalta näkyviin */
+  .hero__line--left {
+    top: auto;
+    bottom: calc(var(--space-6) + 70px + 10px);
+    left: -60%;
+    width: 100%;
   }
-  .hero__mobile-lines {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(var(--nav-height) + var(--space-4) + 75px + 200px);
-    z-index: 3;
-  }
-  .hero__mobile-lines .hero__line--left {
-    width: 50%;
-  }
-  .hero__mobile-lines .hero__line--right {
-    width: 100vw;
+  .hero__line--right {
+    top: auto;
+    bottom: calc(var(--space-6) + 70px + 10px);
+    right: -60%;
+    width: 100%;
   }
 }
 
