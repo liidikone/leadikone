@@ -95,6 +95,8 @@ export default function Hero() {
         <p className="hero__lead hero__lead--pc">Muuta näyttökerrat rahaksi</p>
       </div>
 
+      <div className="hero__red-line" aria-hidden="true" />
+
       <p className="hero__lead hero__lead--mobile">Muuta näyttökerrat rahaksi</p>
 
       <div className="hero__ref-wheel" aria-hidden="true">
