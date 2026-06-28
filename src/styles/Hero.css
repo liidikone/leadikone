@@ -196,19 +196,20 @@ body.lead-modal-open .hero__chat-label {
   height: 3px;
   background: #e8000d;
   z-index: 3;
-  /* mitattu: offsetTop 451 + offsetHeight 67/2 = 484px nav mukaan lukien */
   top: 484px;
 }
 .hero__line--left {
   left: 0;
-  /* slogan offsetLeft 55px oikealta, leveys 770px → vapaata tilaa vasemmalla = 100% - 825px */
   width: calc(100% - 770px - 55px - 12px);
   transform-origin: left center;
   animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  overflow: visible;
+  clip-path: none;
 }
 .hero__line--right {
-  /* alkaa sloganin oikeasta reunasta (55px sisällä reunasta) ja poistuu ulos */
-  left: calc(100% - 55px + 12px);
+  position: fixed;
+  top: 484px;
+  left: calc(100vw - 55px + 12px);
   width: 100vw;
   transform-origin: left center;
   animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
@@ -249,8 +250,10 @@ body.lead-modal-open .hero__chat-label {
     width: 100%;
   }
   .hero__line--right {
+    position: absolute;
     top: auto;
     bottom: calc(var(--space-6) + 70px + 10px);
+    left: auto;
     right: -60%;
     width: 100%;
   }
