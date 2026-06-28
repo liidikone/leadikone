@@ -92,8 +92,10 @@ export default function Hero() {
           SOMET<span className="hero__title-on">ON</span><br />
           <span className="hero__title-accent">→LIIDIKONE</span>
         </h1>
-        <p className="hero__lead">Muuta näyttökerrat rahaksi</p>
+        <p className="hero__lead hero__lead--pc">Muuta näyttökerrat rahaksi</p>
       </div>
+
+      <p className="hero__lead hero__lead--mobile">Muuta näyttökerrat rahaksi</p>
 
       <div className="hero__ref-wheel" aria-hidden="true">
         <div className="hero__ref-track">
