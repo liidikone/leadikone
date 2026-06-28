@@ -86,6 +86,13 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
+/* Wrapper pitää molemmat gridit samalla rivinvälillä kuin alkuperäinen --all grid */
+.tiimi-page__grids-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 /* Tiimi (Founders + Asiakaspäällikkö):
    mobiili 2-col, desktop 3-col */
 .tiimi-page__grid--team {
@@ -97,9 +104,14 @@
   }
 }
 
-/* Vaikuttajat: aina 2-col */
+/* Vaikuttajat: mobiili 2-col, desktop 3-col (kortit vasemmalle, ei tyhjiä) */
 .tiimi-page__grid--influencers {
   grid-template-columns: 1fr 1fr;
+}
+@media (min-width: 769px) {
+  .tiimi-page__grid--influencers {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ============================================================
