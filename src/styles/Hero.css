@@ -199,7 +199,7 @@ body.lead-modal-open .hero__chat-label {
 @media (max-width: 768px) {
   .hero__bg {
     background-size: cover;
-    background-position: center;
+    background-position: calc(50% + 550px) center;
   }
 }
 
