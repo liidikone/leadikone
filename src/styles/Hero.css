@@ -196,22 +196,27 @@ body.lead-modal-open .hero__chat-label {
   height: 3px;
   background: #e8000d;
   z-index: 3;
-  /* slogan on noin 60% hero-korkeudesta */
-  top: 58%;
+  top: calc(var(--nav-height) + var(--space-16) + clamp(4.62rem, 13.2vw, 11.55rem) * 0.88 * 2 + var(--space-10) + clamp(var(--text-2xl), 3.85vw, var(--text-5xl)) * 0.75);
 }
 .hero__line--left {
   left: 0;
-  width: 22%;
+  width: 18%;
   transform-origin: left center;
   animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 .hero__line--right {
-  right: -50%;
-  width: 22%;
+  /* alkaa sloganin oikeasta reunasta (slogan max-width 770px, right-aligned, gutter ~2rem) */
+  right: calc(var(--gutter) + 770px);
+  left: auto;
+  width: 100vw;
   transform-origin: right center;
-  animation: red-line-slide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  animation: red-line-slide-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 @keyframes red-line-slide {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+@keyframes red-line-slide-right {
   from { transform: scaleX(0); opacity: 0; }
   to   { transform: scaleX(1); opacity: 1; }
 }
