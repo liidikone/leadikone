@@ -82,7 +82,7 @@ export default function Hero() {
   return (
     <section className="hero" id="hero">
       <div className="hero__bg" aria-hidden="true">
-        <img src="/hero-bg.avif" alt="" loading="eager" fetchPriority="high" />
+        <img src="/hero-bg.png" alt="" loading="eager" fetchPriority="high" />
         <div className="hero__bg-fade hero__bg-fade--left" />
         <div className="hero__bg-fade hero__bg-fade--right" />
       </div>
