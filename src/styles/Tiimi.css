@@ -100,17 +100,16 @@
 }
 @media (min-width: 769px) {
   .tiimi-page__grid--team {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* Vaikuttajat: mobiili 2-col, desktop 3-col (kortit vasemmalle, ei tyhjiä) */
 .tiimi-page__grid--influencers {
   grid-template-columns: 1fr 1fr;
 }
 @media (min-width: 769px) {
   .tiimi-page__grid--influencers {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
