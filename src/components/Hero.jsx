@@ -82,7 +82,7 @@ export default function Hero() {
   return (
     <section className="hero" id="hero">
       <div className="hero__bg" aria-hidden="true">
-        <img src="/leadikone-bg.avif" alt="" loading="eager" fetchPriority="high" />
+        <img src="/hero-bg.avif" alt="" loading="eager" fetchPriority="high" />
       </div>
 
       <div className="hero__content">
