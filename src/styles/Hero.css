@@ -18,35 +18,13 @@
   background-image: url('/hero-bg.png');
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center calc(50% + 25px);
 }
 .hero__bg img {
   display: none;
 }
 
-/* Vasen + oikea musta — peittää contain-kuvan tyhjät reunat */
-.hero__bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to right, #000000 0%, #000000 6%, transparent 22%),
-    linear-gradient(to left,  #000000 0%, #000000 6%, transparent 22%);
-  z-index: 1;
-  pointer-events: none;
-}
 
-/* Ylä + ala fade */
-.hero__bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom, #000000 0%, transparent 12%),
-    linear-gradient(to top,    #000000 0%, transparent 18%);
-  z-index: 1;
-  pointer-events: none;
-}
 
 .hero__content {
   position: relative;
@@ -84,6 +62,8 @@
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-10);
   text-align: center;
+  background: #000;
+  padding: 0.15em 0.4em;
 }
 
 .hero__title-on {
