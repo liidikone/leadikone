@@ -29,8 +29,28 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to right,  rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 8%, rgba(0,0,0,0.15) 18%, rgba(0,0,0,0) 28%),
-    linear-gradient(to left,   rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 8%, rgba(0,0,0,0.15) 18%, rgba(0,0,0,0) 28%);
+    linear-gradient(to right,
+      rgba(0,0,0,1)    0px,
+      rgba(0,0,0,0.97) 4px,
+      rgba(0,0,0,0.93) 7px,
+      rgba(0,0,0,0.85) 11px,
+      rgba(0,0,0,0.74) 16px,
+      rgba(0,0,0,0.58) 21px,
+      rgba(0,0,0,0.38) 27px,
+      rgba(0,0,0,0.17) 32px,
+      rgba(0,0,0,0)    35mm
+    ),
+    linear-gradient(to left,
+      rgba(0,0,0,1)    0px,
+      rgba(0,0,0,0.95) 5px,
+      rgba(0,0,0,0.88) 9px,
+      rgba(0,0,0,0.77) 14px,
+      rgba(0,0,0,0.61) 19px,
+      rgba(0,0,0,0.42) 24px,
+      rgba(0,0,0,0.21) 30px,
+      rgba(0,0,0,0.06) 33px,
+      rgba(0,0,0,0)    35mm
+    );
 }
 
 .hero__content {
