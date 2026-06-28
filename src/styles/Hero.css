@@ -3,11 +3,7 @@
    ============================================================ */
 .hero {
   position: relative;
-  height: 100svh;
-  height: 100vh; /* fallback */
   min-height: var(--hero-min-height);
-  max-height: 100svh;
-  max-height: 100vh; /* fallback */
   background: var(--hero-bg);
   display: flex;
   align-items: center;
@@ -26,6 +22,8 @@
   object-fit: cover;
   object-position: center;
   display: block;
+  transform: scale(0.8);
+  transform-origin: center center;
 }
 
 .hero__bg::after {
