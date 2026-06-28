@@ -197,8 +197,15 @@ body.lead-modal-open .hero__chat-label {
    MOBILE
    ============================================================ */
 @media (max-width: 768px) {
+  .hero__bg {
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+@media (max-width: 768px) {
   .hero__title { font-size: clamp(5.5rem, 24vw, 9rem); }
-  .hero__content { padding-inline: var(--space-6); }
+  .hero__content { padding-inline: var(--space-6); padding-top: var(--nav-height); }
   .hero__lead { font-size: clamp(var(--text-xl), 5.5vw, var(--text-3xl)); text-align: right; }
 }
 
